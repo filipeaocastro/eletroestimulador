@@ -1,0 +1,4 @@
+TODO:
+[ ] Fazer a função pra aplicar todos os parâmetros
+[ ] Fazer os controles de tempo (usando time do sistema?)
+[ ] 
