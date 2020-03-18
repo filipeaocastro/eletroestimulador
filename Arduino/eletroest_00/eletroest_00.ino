@@ -38,6 +38,9 @@ uint32_t total_duration = 500;       //ms
 uint32_t period = 1000000; // 10ms (em 0,01 ns)
 uint32_t duty = 0;  // Deve ser transformado em unidades de 0,01 ns também
 
+bool burst_on = 0;
+bool train_burst_on = 0;
+
 uint8_t buf[BUF_LENGTH] = {0};
 
 long time_past = 0;
@@ -79,11 +82,16 @@ void loop()
         if(cod.equals(String("IAM")))
         {
             i_amp = valor;
+            
+
+            // 1/6*V ~ 5/6*V | V = 3.3V
+            // 0,55 V até 2,75 V
         }
 
         else if(cod.equals(String("FRQ")))
         {
             freq = valor;
+            double T = 100000000 / freq;    // Transforma pra unidades de 0,01 ns
         }
 
         else if(cod.equals(String("BDW")))
@@ -115,7 +123,9 @@ void loop()
         {
             total_duration = valor;
         }
-        
+
+
+
     }
 
 
@@ -131,4 +141,9 @@ void loop()
         
         if(bandwidth >= 100)  bandwidth = 0;
     }
+}
+
+void atualiza_param()
+{
+
 }
