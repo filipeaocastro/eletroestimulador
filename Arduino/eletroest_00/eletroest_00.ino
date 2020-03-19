@@ -19,6 +19,8 @@ serial e irá definir os parâmetros da eletroestimulação, sendo estes:
     Outros protocolos:
     STA                     Start - Inicia a estimulação
     STO                     Stop - Interrompe a estimulação
+    REP                     Report - Mostra todas as variáveis
+    MSG                     Messages - Ativa ou desativa as mensagens de início/fim
 
 **/
 #include "pwm_lib.h"
@@ -46,6 +48,8 @@ uint16_t valor_DAC = 0;
 bool burst_on = 0;
 bool train_burst_on = 0;
 bool estimulation_on = 0;
+bool alert_msg_on = 1;
+bool state_changed = 0;
 
 uint8_t buf[BUF_LENGTH] = {0};
 
@@ -56,6 +60,7 @@ pwm<pwm_pin::PWMH1_PA19> pwm_pin42;  //Pino 42
 
 void setup()
 {
+    analogWriteResolution(12);
     Serial.begin(115200);
     pinMode(42, OUTPUT);    // Ver se isso não atrapalha
     duty = (unsigned long) map(bandwidth, 0, 100, 0, period);
@@ -89,9 +94,18 @@ void loop()
         
 
         if(cod.equals(String("STA")))
+        {
+            
             inicia();
+
+        }
+            
         else if(cod.equals(String("STO")))
+        {
+            state_changed = 1;
             stop();
+        }
+            
         
 
         // Compara qual código que foi recebido (switch-case não funciona com string em C++)
@@ -106,6 +120,7 @@ void loop()
             //tensao *= 100; // Transforma de 1,5 pra 150
             //valor_DAC = map((uint16_t)tensao, 54, 274, 0, 4095);    // Converte pra saida do DAC em 12 bits de resolução
             valor_DAC = map(i_amp, 360, 1823, 0, 4095);
+            //Serial.println(valor_DAC);
 
             //analogWrite(SAIDA_DAC, saida_DAC);
 
@@ -149,9 +164,21 @@ void loop()
         {
             total_duration = valor;
         }
-    }
 
-    if( ((millis() - total_time_past) <= total_duration) && estimulation_on)
+        else if(cod.equals(String("REP")))
+        {
+            printReport();
+        }
+        if(cod.equals(String("MSG")))
+        {
+            if(valor > 0)
+                alert_msg_on = true;
+            else
+                alert_msg_on = false;
+        }
+    }
+    bool on_time_past = (millis() - total_time_past) <= total_duration;
+    if(on_time_past && estimulation_on)
     {
         if(train_burst_on)
         {
@@ -159,17 +186,20 @@ void loop()
             {
                 pwm_pin42.start(period, duty);
                 delayMicroseconds(burst_width);
+                pwm_pin42.stop(); 
+                digitalWrite(42, LOW);
                 burst_on = !burst_on;
             }
             else
-            {
-                pwm_pin42.stop();               //// --------------> O .stop deixa o pino em nível baixo?
+            {        
                 delayMicroseconds(burst_interval);
                 burst_on = !burst_on;
             }
 
             if((millis() - train_time) >= burst_train_width)
             {
+                pwm_pin42.stop();
+                digitalWrite(42, LOW); 
                 train_burst_on = !train_burst_on;
                 train_time = millis();
             }
@@ -182,14 +212,17 @@ void loop()
                 train_time = millis();
             }
         }
+        state_changed = 1;
     }
-    else if(!estimulation_on)
+    else if(!on_time_past || !estimulation_on)
         stop();
     
 }
 
 void inicia()
 {
+    if(alert_msg_on)
+        Serial.println("Inicio da estimulação");
     analogWrite(SAIDA_DAC, valor_DAC);
     duty = (unsigned long) map(bandwidth, 0, 100, 0, period);
     estimulation_on = true;
@@ -197,10 +230,55 @@ void inicia()
     burst_on = true;
     total_time_past = millis();
     train_time = millis();
+    state_changed = 1;
 }
 void stop()
 {
-    estimulation_on = false;
-    pwm_pin42.stop(); 
+    if(state_changed)
+    {
+        estimulation_on = false;
+        pwm_pin42.stop(); 
+        if(alert_msg_on)
+            Serial.println("Fim da estimulacao");
+        state_changed = 0;
+        analogWrite(SAIDA_DAC, 0);
+    }
+    
 }
+void printReport()
+{
+    Serial.println("\n********************************");
+    Serial.println("PARAMETROS DA ELETROESTIMULAÇÃO:\n");
 
+    Serial.print("IAM = ");
+    Serial.print(i_amp);
+    Serial.println(" uA");
+
+    Serial.print("FRQ = ");
+    Serial.print(freq);
+    Serial.println(" Hz");
+
+    Serial.print("BDW = ");
+    Serial.print(bandwidth);
+    Serial.println(" %");
+
+    Serial.print("BRW = ");
+    Serial.print(burst_width);
+    Serial.println(" us");
+
+    Serial.print("BRI = ");
+    Serial.print(burst_interval);
+    Serial.println(" us");
+
+    Serial.print("BTW = ");
+    Serial.print(burst_train_width);
+    Serial.println(" ms");
+
+    Serial.print("BTI = ");
+    Serial.print(burst_train_interval);
+    Serial.println(" ms");
+
+    Serial.print("TDR = ");
+    Serial.print(total_duration);
+    Serial.println(" ms");
+}
