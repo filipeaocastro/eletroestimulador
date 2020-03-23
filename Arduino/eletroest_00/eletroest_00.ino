@@ -38,10 +38,13 @@ uint32_t burst_interval = 100;       //us
 uint32_t burst_train_width = 10;     //ms
 uint32_t burst_train_interval = 10;  //ms
 uint32_t total_duration = 500;       //ms
+uint32_t random_bti_min = 500;       //ms
+uint32_t random_bti_max = 2000;      //ms
 
 
 uint32_t period = 100000; // (em 0,01 ns)
 uint32_t duty = 0;  // Deve ser transformado em unidades de 0,01 ns também
+uint32_t burst_train_interval_static = 10;  //ms
 
 uint16_t valor_DAC = 0;
 
@@ -50,6 +53,7 @@ bool train_burst_on = 0;
 bool estimulation_on = 0;
 bool alert_msg_on = 1;
 bool state_changed = 0;
+bool random_bti_on = false;
 
 uint8_t buf[BUF_LENGTH] = {0};
 
@@ -65,6 +69,7 @@ void setup()
     pinMode(42, OUTPUT);    // Ver se isso não atrapalha
     duty = (unsigned long) map(bandwidth, 0, 100, 0, period);
     pwm_pin42.start(period, duty);
+    randomSeed(analogRead(5));
 }
 void loop()
 {
@@ -92,7 +97,7 @@ void loop()
         }
         
         
-
+        // Compara qual código que foi recebido (switch-case não funciona com string em C++)
         if(cod.equals(String("STA")))
         {
             
@@ -105,10 +110,6 @@ void loop()
             state_changed = 1;
             stop();
         }
-            
-        
-
-        // Compara qual código que foi recebido (switch-case não funciona com string em C++)
         else if(cod.equals(String("IAM")))
         {
             if(valor < 360) valor = 360;
@@ -158,6 +159,7 @@ void loop()
         else if(cod.equals(String("BTI")))
         {
             burst_train_interval = valor;
+            burst_train_interval_static = valor;
         }
 
         else if(cod.equals(String("TDR")))
@@ -169,14 +171,52 @@ void loop()
         {
             printReport();
         }
-        if(cod.equals(String("MSG")))
+        else if(cod.equals(String("MSG")))
         {
             if(valor > 0)
                 alert_msg_on = true;
             else
                 alert_msg_on = false;
         }
+        else if(cod.equals(String("RND")))
+        {
+            if(buf_length < 6)
+                break;
+
+            //char codigo_rnd[4];
+            for(int i = 0; i < 3; i++) codigo[i] = valor_buf[i];
+            cod = String(codigo);
+
+            if(cod.equals(String("OFF")))
+            {
+                random_bti_on = false;
+                burst_train_interval = burst_train_interval_static;
+            }
+                
+            else
+            {
+                if(buf_length <= 6)
+                    break;
+
+                char rnd_valor_buf[32];
+                for(int i = 3; i < buf_length; i++) rnd_valor_buf[i - 3] = valor_buf[i];
+                valor = atoi(rnd_valor_buf);
+
+                if(cod.equals(String("MAX")))
+                {
+                    random_bti_on = true;
+                    random_bti_max = valor;
+                }
+                else if(cod.equals(String("MIN")))
+                {
+                    random_bti_on = true;
+                    random_bti_min = valor;
+                }
+
+            }           
+        }
     }
+    // Verifica se já passou o tempo total e guarda o resultado em 'on_time_past'
     bool on_time_past = (millis() - total_time_past) <= total_duration;
     if(on_time_past && estimulation_on)
     {
@@ -210,6 +250,8 @@ void loop()
             {
                 train_burst_on = !train_burst_on;
                 train_time = millis();
+                if(random_bti_on)
+                    burst_train_interval = random(random_bti_min, random_bti_max);
             }
         }
         state_changed = 1;
@@ -224,6 +266,10 @@ void inicia()
     if(alert_msg_on)
         Serial.println("Inicio da estimulação");
     analogWrite(SAIDA_DAC, valor_DAC);
+
+    if(random_bti_on)
+        burst_train_interval = random(random_bti_min, random_bti_max);
+
     duty = (unsigned long) map(bandwidth, 0, 100, 0, period);
     estimulation_on = true;
     train_burst_on = true;
