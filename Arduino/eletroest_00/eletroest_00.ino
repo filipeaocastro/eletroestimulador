@@ -31,20 +31,20 @@ using namespace arduino_due::pwm_lib;
 
 // Variáveis definidas pelo usuário
 uint32_t i_amp = 500;                //uA               
-uint32_t freq = 1000;                //Hz
-uint32_t bandwidth = 0;              //%
-uint32_t burst_width = 100;          //us
-uint32_t burst_interval = 100;       //us
-uint32_t burst_train_width = 10;     //ms
-uint32_t burst_train_interval = 10;  //ms
-uint32_t total_duration = 500;       //ms
+uint32_t freq = 100000;                //Hz
+uint32_t bandwidth = 75;              //%
+uint32_t burst_width = 50000;          //us
+uint32_t burst_interval = 10000;       //us
+uint32_t burst_train_width = 1000;     //ms
+uint32_t burst_train_interval = 1000;  //ms
+uint32_t total_duration = 10000;       //ms
 uint32_t random_bti_min = 500;       //ms
-uint32_t random_bti_max = 2000;      //ms
+uint32_t random_bti_max = 3000;      //ms
 
 
 uint32_t period = 100000; // (em 0,01 ns)
 uint32_t duty = 0;  // Deve ser transformado em unidades de 0,01 ns também
-uint32_t burst_train_interval_static = 10;  //ms
+uint32_t burst_train_interval_static = 1000;  //ms
 
 uint16_t valor_DAC = 0;
 
@@ -54,8 +54,6 @@ bool estimulation_on = 0;
 bool alert_msg_on = 1;
 bool state_changed = 0;
 bool random_bti_on = false;
-
-uint8_t buf[BUF_LENGTH] = {0};
 
 unsigned long total_time_past = 0;
 unsigned long train_time = 0;
@@ -74,12 +72,13 @@ void setup()
 void loop()
 {
 
-    while(Serial.available())
+    while(Serial.available() > 2)
     {
         uint8_t buf_length = 0;
         char codigo[4];
-        char valor_buf[32];
+        char valor_buf[32] = {'f'};
         uint32_t valor = 0;
+        uint8_t buf[BUF_LENGTH] = {'f'};
 
         buf_length = (uint8_t)Serial.readBytesUntil('\n', buf, BUF_LENGTH);
 
@@ -199,7 +198,7 @@ void loop()
                     break;
 
                 char rnd_valor_buf[32];
-                for(int i = 3; i < buf_length; i++) rnd_valor_buf[i - 3] = valor_buf[i];
+                for(unsigned int i = 3; i < sizeof(valor_buf); i++) rnd_valor_buf[i - 3] = valor_buf[i];
                 valor = atoi(rnd_valor_buf);
 
                 if(cod.equals(String("MAX")))
@@ -251,7 +250,7 @@ void loop()
                 train_burst_on = !train_burst_on;
                 train_time = millis();
                 if(random_bti_on)
-                    burst_train_interval = random(random_bti_min, random_bti_max);
+                    burst_train_interval = (uint32_t)random(random_bti_min, random_bti_max);
             }
         }
         state_changed = 1;
@@ -268,7 +267,7 @@ void inicia()
     analogWrite(SAIDA_DAC, valor_DAC);
 
     if(random_bti_on)
-        burst_train_interval = random(random_bti_min, random_bti_max);
+        burst_train_interval = (uint32_t)random(random_bti_min, random_bti_max);
 
     duty = (unsigned long) map(bandwidth, 0, 100, 0, period);
     estimulation_on = true;
@@ -326,5 +325,17 @@ void printReport()
 
     Serial.print("TDR = ");
     Serial.print(total_duration);
+    Serial.println(" ms");
+
+    Serial.print("RND = ");
+    Serial.print(random_bti_on);
+    Serial.println(" ON/OFF");
+
+    Serial.print("RNDMAX = ");
+    Serial.print(random_bti_max);
+    Serial.println(" ms");
+
+    Serial.print("RNDMIN = ");
+    Serial.print(random_bti_min);
     Serial.println(" ms");
 }

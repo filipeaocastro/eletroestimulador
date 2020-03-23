@@ -2,3 +2,41 @@ TODO:
 [ ] Fazer a função pra aplicar todos os parâmetros
 [ ] Fazer os controles de tempo (usando time do sistema?)
 [ ] 
+
+IAM100
+FRQ1000
+BDW50
+BRW150
+BRI50
+BTW10
+BTI20
+TDR10000
+
+O comando funciona de forma que os 3 primeiros caracteres definem a variável que vai ser controlada e os caracteres seguintes são o valor dela e o limitador é definido por um '\n', daí são essas as variáveis:
+
+    NOME                            PROTOCOLO       UNIDADE
+    Amplitude da corrente           IAM             uA
+    Frequência da corrente          FRQ             Hz
+    Largura de pulso                BDW             %
+    Duração de cada burst           BRW             us
+    Intervalo entre bursts          BRI             us
+    Duração de um trem de bursts    BTW             ms
+    Intervalo entre trens bursts    BTI             ms
+    Duração total da estimulação    TDR             ms
+
+    
+    BTI aleatório mínimo            IMI             ms
+    BTI aleatório máximo            IMA             ms
+
+    Outros protocolos:
+    STA                     Start - Inicia a estimulação
+    STO                     Stop - Interrompe a estimulação
+    REP                     Report - Mostra todas as variáveis
+    MSG                     Messages - Ativa ou desativa as mensagens de início/fim
+    RND                     BTI aleatório -> deve ser seguido de MIN ou MAX seguido do valor. Para desligar basta colocar OFF. 
+                            Para ligar, basta setar um valor mínimo ou máximo.
+                            Exemplos: RNDMAX1500, RNDMIN500, RNDOFF.     
+
+    Então, pra alterar a corrente, por exemplo: Quero uma corrente de 1500 uA, então envia IAM1500
+    Se quiser iniciar a estimulação envia STA
+    
