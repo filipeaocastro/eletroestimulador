@@ -39,4 +39,81 @@ O comando funciona de forma que os 3 primeiros caracteres definem a variável qu
 
     Então, pra alterar a corrente, por exemplo: Quero uma corrente de 1500 uA, então envia IAM1500
     Se quiser iniciar a estimulação envia STA
+
+
+        public readonly static string amplitude = "IAM";
+        public readonly static string frequencia = "FRQ";
+        public readonly static string larguraPulso = "BDW";
+        public readonly static string duracaoTotal = "TDR";
+        public readonly static string duracaoBurst = "BRW";
+        public readonly static string intervaloBurst = "BRI";
+        public readonly static string duracaoTB = "BTW";
+        public readonly static string intervaloTB = "BTI";
+        
+        public readonly static string intervaloRndOFF = "RNDOFF";
+        public readonly static string intervaloTBmin = "RNDMIN";
+        public readonly static string intervaloTBmax = "RNDMAX";
+
+        public readonly static string iniciar = "STA";
+        public readonly static string parar = "STO";
+        public readonly static string relatorio = "REP";
+
+        prot_base.Add(amplitude);
+        prot_base.Add(frequencia);
+        prot_base.Add(larguraPulso);
+        prot_base.Add(duracaoTotal);
+        prot_base.Add(duracaoBurst);
+        prot_base.Add(intervaloBurst);
+        prot_base.add(duracaoTB);
+
+
+
+        public const string amplitude = "IAM";
+        public const string frequencia = "FRQ";
+        public const string larguraPulso = "BDW";
+        public const string duracaoTotal = "TDR";
+        public const string duracaoBurst = "BRW";
+        public const string intervaloBurst = "BRI";
+        public const string duracaoTB = "BTW";
+        public const string intervaloTB = "BTI";
+        
+        public const string intervaloRndOFF = "RNDOFF";
+        public const string intervaloTBmin = "RNDMIN";
+        public const string intervaloTBmax = "RNDMAX";
+
+        public const string iniciar = "STA";
+        public const string parar = "STO";
+        public const string relatorio = "REP";
+
+        case Protocolos.frequencia:
+            tb = textBox_amplitude;
+            break;
+
+        case Protocolos.larguraPulso:
+            tb = textBox_amplitude;
+            break;
+
+        case Protocolos.duracaoTotal:
+            tb = textBox_amplitude;
+            break;
+
+        case Protocolos.duracaoBurst:
+            tb = textBox_amplitude;
+            break;
+
+        case Protocolos.intervaloBurst:
+            tb = textBox_amplitude;
+            break;
+
+        case Protocolos.duracaoTB:
+            tb = textBox_amplitude;
+            break;
+
+        case Protocolos.intervaloTB:
+            tb = textBox_amplitude;
+            break;
+
+        case Protocolos.amplitude:
+            tb = textBox_amplitude;
+            break;
     

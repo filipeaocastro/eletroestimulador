@@ -170,6 +170,10 @@ void loop()
         {
             printReport();
         }
+        else if(cod.equals(String("ATT")))
+        {
+            printReport_Simple();
+        }
         else if(cod.equals(String("MSG")))
         {
             if(valor > 0)
@@ -263,7 +267,7 @@ void loop()
 void inicia()
 {
     if(alert_msg_on)
-        Serial.println("Inicio da estimulação");
+        Serial.write("INITIATED\n");
     analogWrite(SAIDA_DAC, valor_DAC);
 
     if(random_bti_on)
@@ -284,7 +288,7 @@ void stop()
         estimulation_on = false;
         pwm_pin42.stop(); 
         if(alert_msg_on)
-            Serial.println("Fim da estimulacao");
+            Serial.write("STOPED\n");
         state_changed = 0;
         analogWrite(SAIDA_DAC, 0);
     }
@@ -338,4 +342,58 @@ void printReport()
     Serial.print("RNDMIN = ");
     Serial.print(random_bti_min);
     Serial.println(" ms");
+}
+
+void printReport_Simple()
+{
+    Serial.write("IAM\t");
+    Serial.print(i_amp);
+    Serial.write('\n');
+
+    Serial.write("FRQ\t");
+    Serial.print(freq);
+    Serial.write('\n');
+
+    Serial.write("BDW\t");
+    Serial.print(bandwidth);
+    Serial.write('\n');
+
+    Serial.write("BRW\t");
+    Serial.print(burst_width);
+    Serial.write('\n');
+
+    Serial.write("BRI\t");
+    Serial.print(burst_interval);
+    Serial.write('\n');
+
+    Serial.write("BTW\t");
+    Serial.print(burst_train_width);
+    Serial.write('\n');
+
+    Serial.write("BTI\t");
+    Serial.print(burst_train_interval);
+    Serial.write('\n');
+
+    Serial.write("TDR\t");
+    Serial.print(total_duration);
+    Serial.write('\n');
+
+    if(random_bti_on)
+    {
+        Serial.write("RNDMAX\t");
+        Serial.print(random_bti_max);
+        Serial.write('\n');
+
+        Serial.write("RNDMIN\t");
+        Serial.print(random_bti_min);
+        Serial.write('\n');
+    }
+    else
+    {
+        Serial.write("RNDOFF\n");
+    }
+
+    
+
+    
 }

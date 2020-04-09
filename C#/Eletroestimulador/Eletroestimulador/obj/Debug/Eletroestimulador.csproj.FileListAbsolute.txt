@@ -1,0 +1,10 @@
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\bin\Debug\Eletroestimulador.exe.config
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\bin\Debug\Eletroestimulador.exe
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\bin\Debug\Eletroestimulador.pdb
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\obj\Debug\Eletroestimulador.csprojAssemblyReference.cache
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\obj\Debug\Eletroestimulador.Form1.resources
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\obj\Debug\Eletroestimulador.Properties.Resources.resources
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\obj\Debug\Eletroestimulador.csproj.GenerateResource.cache
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\obj\Debug\Eletroestimulador.csproj.CoreCompileInputs.cache
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\obj\Debug\Eletroestimulador.exe
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador\Eletroestimulador\obj\Debug\Eletroestimulador.pdb
