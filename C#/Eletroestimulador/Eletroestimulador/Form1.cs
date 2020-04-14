@@ -38,6 +38,8 @@ namespace Eletroestimulador
             all_tbs.Add(textBox_intervaloTB);
             all_tbs.Add(textBox_aleatTBmin);
             all_tbs.Add(textBox_aleatTBmax);
+
+            textBox_amplitude.Text = trackBar_iamp.Value.ToString();
         }
 
         private void button_conectarSerial_Click(object sender, EventArgs e)
@@ -328,12 +330,43 @@ namespace Eletroestimulador
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (ArduinoSerial.IsOpen)
-            {
-                th.Abort();
-                ArduinoSerial.Close();
-            }
+            if(ArduinoSerial != null)
+                if (ArduinoSerial.IsOpen)
+                {
+                    th.Abort();
+                    ArduinoSerial.Close();
+                }
                 
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            textBox_amplitude.Text = trackBar_iamp.Value.ToString();
+        }
+
+        private void textBox_amplitude_Leave(object sender, EventArgs e)
+        {
+            try
+            {
+                if (textBox_amplitude.Text == "")
+                    return;
+
+                int tb_value = Convert.ToInt32(textBox_amplitude.Text.ToString());
+
+                if (tb_value < trackBar_iamp.Minimum)
+                    tb_value = trackBar_iamp.Minimum;
+                if (tb_value > trackBar_iamp.Maximum)
+                    tb_value = trackBar_iamp.Maximum;
+
+                textBox_amplitude.Text = tb_value.ToString();
+
+
+                trackBar_iamp.Value = Convert.ToInt32(textBox_amplitude.Text.ToString());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }

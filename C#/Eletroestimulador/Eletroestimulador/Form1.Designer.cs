@@ -70,22 +70,25 @@
             this.button_conectarSerial = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label_statusConexao = new System.Windows.Forms.Label();
+            this.trackBar_iamp = new System.Windows.Forms.TrackBar();
             this.groupBox_estimulacao.SuspendLayout();
             this.groupBox_burst.SuspendLayout();
             this.groupBox_TB.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_iamp)).BeginInit();
             this.SuspendLayout();
             // 
             // textBox_freq
             // 
             this.textBox_freq.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_freq.Location = new System.Drawing.Point(106, 52);
+            this.textBox_freq.Location = new System.Drawing.Point(106, 99);
             this.textBox_freq.Name = "textBox_freq";
             this.textBox_freq.Size = new System.Drawing.Size(72, 22);
-            this.textBox_freq.TabIndex = 0;
+            this.textBox_freq.TabIndex = 1;
             // 
             // groupBox_estimulacao
             // 
             this.groupBox_estimulacao.Controls.Add(this.label_msDuracaoTotal);
+            this.groupBox_estimulacao.Controls.Add(this.trackBar_iamp);
             this.groupBox_estimulacao.Controls.Add(this.label_duracaoTotal);
             this.groupBox_estimulacao.Controls.Add(this.textBox_duracaoTotal);
             this.groupBox_estimulacao.Controls.Add(this.label1);
@@ -97,11 +100,10 @@
             this.groupBox_estimulacao.Controls.Add(this.label_hz);
             this.groupBox_estimulacao.Controls.Add(this.label_frequencia);
             this.groupBox_estimulacao.Controls.Add(this.textBox_freq);
-            this.groupBox_estimulacao.Enabled = false;
             this.groupBox_estimulacao.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox_estimulacao.Location = new System.Drawing.Point(12, 67);
             this.groupBox_estimulacao.Name = "groupBox_estimulacao";
-            this.groupBox_estimulacao.Size = new System.Drawing.Size(211, 140);
+            this.groupBox_estimulacao.Size = new System.Drawing.Size(211, 186);
             this.groupBox_estimulacao.TabIndex = 1;
             this.groupBox_estimulacao.TabStop = false;
             this.groupBox_estimulacao.Text = "Estimulação";
@@ -110,7 +112,7 @@
             // 
             this.label_msDuracaoTotal.AutoSize = true;
             this.label_msDuracaoTotal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_msDuracaoTotal.Location = new System.Drawing.Point(182, 111);
+            this.label_msDuracaoTotal.Location = new System.Drawing.Point(182, 158);
             this.label_msDuracaoTotal.Name = "label_msDuracaoTotal";
             this.label_msDuracaoTotal.Size = new System.Drawing.Size(26, 16);
             this.label_msDuracaoTotal.TabIndex = 11;
@@ -120,7 +122,7 @@
             // 
             this.label_duracaoTotal.AutoSize = true;
             this.label_duracaoTotal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_duracaoTotal.Location = new System.Drawing.Point(9, 111);
+            this.label_duracaoTotal.Location = new System.Drawing.Point(9, 158);
             this.label_duracaoTotal.Name = "label_duracaoTotal";
             this.label_duracaoTotal.Size = new System.Drawing.Size(91, 16);
             this.label_duracaoTotal.TabIndex = 10;
@@ -129,16 +131,16 @@
             // textBox_duracaoTotal
             // 
             this.textBox_duracaoTotal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_duracaoTotal.Location = new System.Drawing.Point(106, 108);
+            this.textBox_duracaoTotal.Location = new System.Drawing.Point(106, 155);
             this.textBox_duracaoTotal.Name = "textBox_duracaoTotal";
             this.textBox_duracaoTotal.Size = new System.Drawing.Size(72, 22);
-            this.textBox_duracaoTotal.TabIndex = 9;
+            this.textBox_duracaoTotal.TabIndex = 3;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(184, 27);
+            this.label1.Location = new System.Drawing.Point(179, 51);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(24, 16);
             this.label1.TabIndex = 8;
@@ -148,7 +150,7 @@
             // 
             this.label_porcentagem.AutoSize = true;
             this.label_porcentagem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_porcentagem.Location = new System.Drawing.Point(186, 83);
+            this.label_porcentagem.Location = new System.Drawing.Point(186, 130);
             this.label_porcentagem.Name = "label_porcentagem";
             this.label_porcentagem.Size = new System.Drawing.Size(20, 16);
             this.label_porcentagem.TabIndex = 5;
@@ -158,7 +160,7 @@
             // 
             this.label_larguraPulso.AutoSize = true;
             this.label_larguraPulso.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_larguraPulso.Location = new System.Drawing.Point(19, 83);
+            this.label_larguraPulso.Location = new System.Drawing.Point(19, 130);
             this.label_larguraPulso.Name = "label_larguraPulso";
             this.label_larguraPulso.Size = new System.Drawing.Size(112, 16);
             this.label_larguraPulso.TabIndex = 4;
@@ -167,16 +169,17 @@
             // textBox_amplitude
             // 
             this.textBox_amplitude.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_amplitude.Location = new System.Drawing.Point(106, 24);
+            this.textBox_amplitude.Location = new System.Drawing.Point(135, 48);
             this.textBox_amplitude.Name = "textBox_amplitude";
-            this.textBox_amplitude.Size = new System.Drawing.Size(72, 22);
-            this.textBox_amplitude.TabIndex = 6;
+            this.textBox_amplitude.Size = new System.Drawing.Size(41, 22);
+            this.textBox_amplitude.TabIndex = 0;
+            this.textBox_amplitude.Leave += new System.EventHandler(this.textBox_amplitude_Leave);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(29, 27);
+            this.label2.Location = new System.Drawing.Point(9, 29);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(71, 16);
             this.label2.TabIndex = 7;
@@ -185,16 +188,16 @@
             // textBox_larguraPulso
             // 
             this.textBox_larguraPulso.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_larguraPulso.Location = new System.Drawing.Point(137, 80);
+            this.textBox_larguraPulso.Location = new System.Drawing.Point(137, 127);
             this.textBox_larguraPulso.Name = "textBox_larguraPulso";
             this.textBox_larguraPulso.Size = new System.Drawing.Size(39, 22);
-            this.textBox_larguraPulso.TabIndex = 3;
+            this.textBox_larguraPulso.TabIndex = 2;
             // 
             // label_hz
             // 
             this.label_hz.AutoSize = true;
             this.label_hz.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_hz.Location = new System.Drawing.Point(184, 55);
+            this.label_hz.Location = new System.Drawing.Point(184, 102);
             this.label_hz.Name = "label_hz";
             this.label_hz.Size = new System.Drawing.Size(24, 16);
             this.label_hz.TabIndex = 2;
@@ -204,7 +207,7 @@
             // 
             this.label_frequencia.AutoSize = true;
             this.label_frequencia.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_frequencia.Location = new System.Drawing.Point(21, 55);
+            this.label_frequencia.Location = new System.Drawing.Point(21, 102);
             this.label_frequencia.Name = "label_frequencia";
             this.label_frequencia.Size = new System.Drawing.Size(79, 16);
             this.label_frequencia.TabIndex = 1;
@@ -220,9 +223,9 @@
             this.groupBox_burst.Controls.Add(this.textBox_duracaoBurst);
             this.groupBox_burst.Enabled = false;
             this.groupBox_burst.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox_burst.Location = new System.Drawing.Point(12, 213);
+            this.groupBox_burst.Location = new System.Drawing.Point(12, 257);
             this.groupBox_burst.Name = "groupBox_burst";
-            this.groupBox_burst.Size = new System.Drawing.Size(211, 111);
+            this.groupBox_burst.Size = new System.Drawing.Size(211, 90);
             this.groupBox_burst.TabIndex = 9;
             this.groupBox_burst.TabStop = false;
             this.groupBox_burst.Text = "Burst";
@@ -253,7 +256,7 @@
             this.textBox_intervaloBurst.Location = new System.Drawing.Point(76, 63);
             this.textBox_intervaloBurst.Name = "textBox_intervaloBurst";
             this.textBox_intervaloBurst.Size = new System.Drawing.Size(102, 22);
-            this.textBox_intervaloBurst.TabIndex = 6;
+            this.textBox_intervaloBurst.TabIndex = 5;
             // 
             // label_us1
             // 
@@ -281,7 +284,7 @@
             this.textBox_duracaoBurst.Location = new System.Drawing.Point(76, 35);
             this.textBox_duracaoBurst.Name = "textBox_duracaoBurst";
             this.textBox_duracaoBurst.Size = new System.Drawing.Size(102, 22);
-            this.textBox_duracaoBurst.TabIndex = 0;
+            this.textBox_duracaoBurst.TabIndex = 4;
             // 
             // groupBox_TB
             // 
@@ -325,7 +328,7 @@
             this.checkBox_intervaloTBaleat.Location = new System.Drawing.Point(44, 101);
             this.checkBox_intervaloTBaleat.Name = "checkBox_intervaloTBaleat";
             this.checkBox_intervaloTBaleat.Size = new System.Drawing.Size(134, 20);
-            this.checkBox_intervaloTBaleat.TabIndex = 9;
+            this.checkBox_intervaloTBaleat.TabIndex = 8;
             this.checkBox_intervaloTBaleat.Text = "Intervalo aleatório";
             this.checkBox_intervaloTBaleat.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox_intervaloTBaleat.UseVisualStyleBackColor = true;
@@ -359,7 +362,7 @@
             this.textBox_aleatTBmax.Location = new System.Drawing.Point(76, 164);
             this.textBox_aleatTBmax.Name = "textBox_aleatTBmax";
             this.textBox_aleatTBmax.Size = new System.Drawing.Size(102, 22);
-            this.textBox_aleatTBmax.TabIndex = 13;
+            this.textBox_aleatTBmax.TabIndex = 10;
             // 
             // label_aleatTBms1
             // 
@@ -388,7 +391,7 @@
             this.textBox_intervaloTB.Location = new System.Drawing.Point(76, 63);
             this.textBox_intervaloTB.Name = "textBox_intervaloTB";
             this.textBox_intervaloTB.Size = new System.Drawing.Size(102, 22);
-            this.textBox_intervaloTB.TabIndex = 6;
+            this.textBox_intervaloTB.TabIndex = 7;
             // 
             // label_aleatTBmin
             // 
@@ -428,7 +431,7 @@
             this.textBox_aleatTBmin.Location = new System.Drawing.Point(76, 136);
             this.textBox_aleatTBmin.Name = "textBox_aleatTBmin";
             this.textBox_aleatTBmin.Size = new System.Drawing.Size(102, 22);
-            this.textBox_aleatTBmin.TabIndex = 10;
+            this.textBox_aleatTBmin.TabIndex = 9;
             // 
             // textBox_duracaoTB
             // 
@@ -436,7 +439,7 @@
             this.textBox_duracaoTB.Location = new System.Drawing.Point(76, 32);
             this.textBox_duracaoTB.Name = "textBox_duracaoTB";
             this.textBox_duracaoTB.Size = new System.Drawing.Size(102, 22);
-            this.textBox_duracaoTB.TabIndex = 0;
+            this.textBox_duracaoTB.TabIndex = 6;
             // 
             // button_atualizar
             // 
@@ -446,6 +449,7 @@
             this.button_atualizar.Name = "button_atualizar";
             this.button_atualizar.Size = new System.Drawing.Size(190, 34);
             this.button_atualizar.TabIndex = 11;
+            this.button_atualizar.TabStop = false;
             this.button_atualizar.Text = "Atualizar";
             this.button_atualizar.UseVisualStyleBackColor = true;
             this.button_atualizar.Click += new System.EventHandler(this.button_atualizar_Click);
@@ -455,10 +459,10 @@
             this.button_inciar.Enabled = false;
             this.button_inciar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_inciar.ForeColor = System.Drawing.Color.Green;
-            this.button_inciar.Location = new System.Drawing.Point(12, 330);
+            this.button_inciar.Location = new System.Drawing.Point(13, 353);
             this.button_inciar.Name = "button_inciar";
             this.button_inciar.Size = new System.Drawing.Size(211, 58);
-            this.button_inciar.TabIndex = 12;
+            this.button_inciar.TabIndex = 11;
             this.button_inciar.Text = "Iniciar \r\neletroestimulação";
             this.button_inciar.UseVisualStyleBackColor = true;
             this.button_inciar.Click += new System.EventHandler(this.button_inciar_Click);
@@ -468,10 +472,10 @@
             this.button_parar.Enabled = false;
             this.button_parar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button_parar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.button_parar.Location = new System.Drawing.Point(228, 330);
+            this.button_parar.Location = new System.Drawing.Point(229, 353);
             this.button_parar.Name = "button_parar";
             this.button_parar.Size = new System.Drawing.Size(211, 58);
-            this.button_parar.TabIndex = 13;
+            this.button_parar.TabIndex = 12;
             this.button_parar.Text = "Parar";
             this.button_parar.UseVisualStyleBackColor = true;
             this.button_parar.EnabledChanged += new System.EventHandler(this.button_parar_EnabledChanged);
@@ -481,7 +485,7 @@
             // 
             this.label_statusStatic.AutoSize = true;
             this.label_statusStatic.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_statusStatic.Location = new System.Drawing.Point(160, 404);
+            this.label_statusStatic.Location = new System.Drawing.Point(163, 414);
             this.label_statusStatic.Name = "label_statusStatic";
             this.label_statusStatic.Size = new System.Drawing.Size(60, 20);
             this.label_statusStatic.TabIndex = 9;
@@ -491,7 +495,7 @@
             // 
             this.label_status.AutoSize = true;
             this.label_status.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_status.Location = new System.Drawing.Point(226, 404);
+            this.label_status.Location = new System.Drawing.Point(229, 414);
             this.label_status.Name = "label_status";
             this.label_status.Size = new System.Drawing.Size(83, 20);
             this.label_status.TabIndex = 14;
@@ -503,7 +507,7 @@
             this.button_conectarSerial.Location = new System.Drawing.Point(250, 22);
             this.button_conectarSerial.Name = "button_conectarSerial";
             this.button_conectarSerial.Size = new System.Drawing.Size(190, 34);
-            this.button_conectarSerial.TabIndex = 15;
+            this.button_conectarSerial.TabIndex = 0;
             this.button_conectarSerial.Text = "Conectar";
             this.button_conectarSerial.UseVisualStyleBackColor = true;
             this.button_conectarSerial.Click += new System.EventHandler(this.button_conectarSerial_Click);
@@ -528,6 +532,18 @@
             this.label_statusConexao.TabIndex = 17;
             this.label_statusConexao.Text = "DESCONECTADO";
             this.label_statusConexao.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // trackBar_iamp
+            // 
+            this.trackBar_iamp.Location = new System.Drawing.Point(6, 48);
+            this.trackBar_iamp.Maximum = 1823;
+            this.trackBar_iamp.Minimum = 360;
+            this.trackBar_iamp.Name = "trackBar_iamp";
+            this.trackBar_iamp.Size = new System.Drawing.Size(123, 45);
+            this.trackBar_iamp.TabIndex = 18;
+            this.trackBar_iamp.TickFrequency = 100;
+            this.trackBar_iamp.Value = 360;
+            this.trackBar_iamp.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // Form1
             // 
@@ -554,6 +570,7 @@
             this.groupBox_burst.PerformLayout();
             this.groupBox_TB.ResumeLayout(false);
             this.groupBox_TB.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_iamp)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -603,6 +620,7 @@
         private System.Windows.Forms.Button button_conectarSerial;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label_statusConexao;
+        private System.Windows.Forms.TrackBar trackBar_iamp;
     }
 }
 
