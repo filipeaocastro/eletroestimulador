@@ -25,6 +25,8 @@ namespace Eletroestimulador
         public const string parar = "STO";
         public const string relatorio = "REP";
         public const string atualizar = "ATT";
+        public const string correntePositiva = "POS";
+        public const string correnteNegativa = "NEG";
 
 
         public List<string> Cods(bool rnd_on)
