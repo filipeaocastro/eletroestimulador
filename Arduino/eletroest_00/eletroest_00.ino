@@ -58,7 +58,7 @@ bool random_bti_on = false;
 unsigned long total_time_past = 0;
 unsigned long train_time = 0;
 
-pwm<pwm_pin::PWMH1_PA19> pwm_pin42;  //Pino 42
+pwm<pwm_pin::PWML2_PA20> pwm_pin43;  //Pino 43
 
 void setup()
 {
@@ -66,7 +66,7 @@ void setup()
     Serial.begin(115200);
     pinMode(42, OUTPUT);    // Ver se isso não atrapalha
     duty = (unsigned long) map(bandwidth, 0, 100, 0, period);
-    pwm_pin42.start(period, duty);
+    pwm_pin43.start(period, duty);
     randomSeed(analogRead(5));
 }
 void loop()
@@ -138,6 +138,7 @@ void loop()
         else if(cod.equals(String("BDW")))
         {
             bandwidth = valor;
+
         }
 
         else if(cod.equals(String("BRW")))
@@ -227,9 +228,9 @@ void loop()
         {
             if(burst_on)
             {
-                pwm_pin42.start(period, duty);
+                pwm_pin43.start(period, duty);
                 delayMicroseconds(burst_width);
-                pwm_pin42.stop(); 
+                pwm_pin43.stop(); 
                 digitalWrite(42, LOW);
                 burst_on = !burst_on;
             }
@@ -241,7 +242,7 @@ void loop()
 
             if((millis() - train_time) >= burst_train_width)
             {
-                pwm_pin42.stop();
+                pwm_pin43.stop();
                 digitalWrite(42, LOW); 
                 train_burst_on = !train_burst_on;
                 train_time = millis();
@@ -273,7 +274,9 @@ void inicia()
     if(random_bti_on)
         burst_train_interval = (uint32_t)random(random_bti_min, random_bti_max);
 
-    duty = (unsigned long) map(bandwidth, 0, 100, 0, period);
+    if(bandwidth > period/100)
+        bandwidth = period/100;
+    duty = (unsigned long)bandwidth * 100; //(unsigned long) map(bandwidth, 0, 100, 0, period);
     estimulation_on = true;
     train_burst_on = true;
     burst_on = true;
@@ -286,7 +289,7 @@ void stop()
     if(state_changed)
     {
         estimulation_on = false;
-        pwm_pin42.stop(); 
+        pwm_pin43.stop(); 
         if(alert_msg_on)
             Serial.write("STOPED\n");
         state_changed = 0;

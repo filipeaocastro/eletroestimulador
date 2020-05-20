@@ -30,6 +30,9 @@
         {
             this.textBox_freq = new System.Windows.Forms.TextBox();
             this.groupBox_estimulacao = new System.Windows.Forms.GroupBox();
+            this.groupBox_iDirection = new System.Windows.Forms.GroupBox();
+            this.radioButton_iPos = new System.Windows.Forms.RadioButton();
+            this.radioButton_iNeg = new System.Windows.Forms.RadioButton();
             this.label_msDuracaoTotal = new System.Windows.Forms.Label();
             this.trackBar_iamp = new System.Windows.Forms.TrackBar();
             this.label_duracaoTotal = new System.Windows.Forms.Label();
@@ -71,14 +74,11 @@
             this.button_conectarSerial = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.label_statusConexao = new System.Windows.Forms.Label();
-            this.radioButton_iPos = new System.Windows.Forms.RadioButton();
-            this.radioButton_iNeg = new System.Windows.Forms.RadioButton();
-            this.groupBox_iDirection = new System.Windows.Forms.GroupBox();
             this.groupBox_estimulacao.SuspendLayout();
+            this.groupBox_iDirection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_iamp)).BeginInit();
             this.groupBox_burst.SuspendLayout();
             this.groupBox_TB.SuspendLayout();
-            this.groupBox_iDirection.SuspendLayout();
             this.SuspendLayout();
             // 
             // textBox_freq
@@ -113,6 +113,43 @@
             this.groupBox_estimulacao.TabIndex = 1;
             this.groupBox_estimulacao.TabStop = false;
             this.groupBox_estimulacao.Text = "Estimulação";
+            // 
+            // groupBox_iDirection
+            // 
+            this.groupBox_iDirection.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.groupBox_iDirection.Controls.Add(this.radioButton_iPos);
+            this.groupBox_iDirection.Controls.Add(this.radioButton_iNeg);
+            this.groupBox_iDirection.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox_iDirection.Location = new System.Drawing.Point(0, 87);
+            this.groupBox_iDirection.Name = "groupBox_iDirection";
+            this.groupBox_iDirection.Size = new System.Drawing.Size(211, 51);
+            this.groupBox_iDirection.TabIndex = 22;
+            this.groupBox_iDirection.TabStop = false;
+            this.groupBox_iDirection.Text = "Direção da corrente";
+            // 
+            // radioButton_iPos
+            // 
+            this.radioButton_iPos.AutoSize = true;
+            this.radioButton_iPos.Checked = true;
+            this.radioButton_iPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButton_iPos.Location = new System.Drawing.Point(6, 20);
+            this.radioButton_iPos.Name = "radioButton_iPos";
+            this.radioButton_iPos.Size = new System.Drawing.Size(74, 20);
+            this.radioButton_iPos.TabIndex = 19;
+            this.radioButton_iPos.TabStop = true;
+            this.radioButton_iPos.Text = "Positiva";
+            this.radioButton_iPos.UseVisualStyleBackColor = true;
+            // 
+            // radioButton_iNeg
+            // 
+            this.radioButton_iNeg.AutoSize = true;
+            this.radioButton_iNeg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.radioButton_iNeg.Location = new System.Drawing.Point(124, 20);
+            this.radioButton_iNeg.Name = "radioButton_iNeg";
+            this.radioButton_iNeg.Size = new System.Drawing.Size(81, 20);
+            this.radioButton_iNeg.TabIndex = 20;
+            this.radioButton_iNeg.Text = "Negativa";
+            this.radioButton_iNeg.UseVisualStyleBackColor = true;
             // 
             // label_msDuracaoTotal
             // 
@@ -170,15 +207,15 @@
             this.label_porcentagem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_porcentagem.Location = new System.Drawing.Point(184, 181);
             this.label_porcentagem.Name = "label_porcentagem";
-            this.label_porcentagem.Size = new System.Drawing.Size(20, 16);
+            this.label_porcentagem.Size = new System.Drawing.Size(22, 16);
             this.label_porcentagem.TabIndex = 5;
-            this.label_porcentagem.Text = "%";
+            this.label_porcentagem.Text = "μs";
             // 
             // label_larguraPulso
             // 
             this.label_larguraPulso.AutoSize = true;
             this.label_larguraPulso.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_larguraPulso.Location = new System.Drawing.Point(17, 181);
+            this.label_larguraPulso.Location = new System.Drawing.Point(6, 181);
             this.label_larguraPulso.Name = "label_larguraPulso";
             this.label_larguraPulso.Size = new System.Drawing.Size(112, 16);
             this.label_larguraPulso.TabIndex = 4;
@@ -206,9 +243,9 @@
             // textBox_larguraPulso
             // 
             this.textBox_larguraPulso.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox_larguraPulso.Location = new System.Drawing.Point(135, 178);
+            this.textBox_larguraPulso.Location = new System.Drawing.Point(124, 178);
             this.textBox_larguraPulso.Name = "textBox_larguraPulso";
-            this.textBox_larguraPulso.Size = new System.Drawing.Size(39, 22);
+            this.textBox_larguraPulso.Size = new System.Drawing.Size(50, 22);
             this.textBox_larguraPulso.TabIndex = 2;
             // 
             // label_hz
@@ -551,43 +588,6 @@
             this.label_statusConexao.Text = "DESCONECTADO";
             this.label_statusConexao.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // radioButton_iPos
-            // 
-            this.radioButton_iPos.AutoSize = true;
-            this.radioButton_iPos.Checked = true;
-            this.radioButton_iPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton_iPos.Location = new System.Drawing.Point(6, 20);
-            this.radioButton_iPos.Name = "radioButton_iPos";
-            this.radioButton_iPos.Size = new System.Drawing.Size(74, 20);
-            this.radioButton_iPos.TabIndex = 19;
-            this.radioButton_iPos.TabStop = true;
-            this.radioButton_iPos.Text = "Positiva";
-            this.radioButton_iPos.UseVisualStyleBackColor = true;
-            // 
-            // radioButton_iNeg
-            // 
-            this.radioButton_iNeg.AutoSize = true;
-            this.radioButton_iNeg.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton_iNeg.Location = new System.Drawing.Point(124, 20);
-            this.radioButton_iNeg.Name = "radioButton_iNeg";
-            this.radioButton_iNeg.Size = new System.Drawing.Size(81, 20);
-            this.radioButton_iNeg.TabIndex = 20;
-            this.radioButton_iNeg.Text = "Negativa";
-            this.radioButton_iNeg.UseVisualStyleBackColor = true;
-            // 
-            // groupBox_iDirection
-            // 
-            this.groupBox_iDirection.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.groupBox_iDirection.Controls.Add(this.radioButton_iPos);
-            this.groupBox_iDirection.Controls.Add(this.radioButton_iNeg);
-            this.groupBox_iDirection.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox_iDirection.Location = new System.Drawing.Point(0, 87);
-            this.groupBox_iDirection.Name = "groupBox_iDirection";
-            this.groupBox_iDirection.Size = new System.Drawing.Size(211, 51);
-            this.groupBox_iDirection.TabIndex = 22;
-            this.groupBox_iDirection.TabStop = false;
-            this.groupBox_iDirection.Text = "Direção da corrente";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -610,13 +610,13 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.groupBox_estimulacao.ResumeLayout(false);
             this.groupBox_estimulacao.PerformLayout();
+            this.groupBox_iDirection.ResumeLayout(false);
+            this.groupBox_iDirection.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_iamp)).EndInit();
             this.groupBox_burst.ResumeLayout(false);
             this.groupBox_burst.PerformLayout();
             this.groupBox_TB.ResumeLayout(false);
             this.groupBox_TB.PerformLayout();
-            this.groupBox_iDirection.ResumeLayout(false);
-            this.groupBox_iDirection.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
