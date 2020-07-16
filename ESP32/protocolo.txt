@@ -1,0 +1,43 @@
+O controle do eletroestimulador será feito por um Arduino DUE através de uma saída PWM com frequência e largura de pulso variáveis e uma 
+saída analógica (DAC) para controle da amplitude da corrente aplicada. Uma interface em C# ficará conectada ao Arduino através de comunicação
+serial e irá definir os parâmetros da eletroestimulação, sendo estes:
+    NOME                            VARIÁVEL                PROTOCOLO       UNIDADE
+    Amplitude da corrente           (i_amp)                 IAM             uA
+    Frequência da corrente          (freq)                  FRQ             Hz
+    Largura de pulso                (bandwidth)             BDW             %
+
+
+    Duração de cada burst           (burst_width)           BRW             us
+    Intervalo entre bursts          (burst_interval)        BRI             us
+    Duração de um trem de bursts    (burst_train_width)     BTW             ms
+    Intervalo entre trens bursts    (burst_train_interval)  BTI             ms
+    Duração total da estimulação    (total_duration)        TDR             ms
+
+    Amplitude de spike              (spk_amp)               SKA             uA
+    Largura de spike                (spk_width)             SKW             us
+
+    
+
+    
+
+    Outros protocolos:
+    
+    WFM-XXX                 Define a forma de onda
+                            WFM-SPK - Spikes
+                            WFM-SIN - Senoide
+                            WFM-TRI - Triangular
+                            WFM-DTS - Dente de Serra
+                            WFM-SQR - Quadrada
+                            
+    STA                     Start - Inicia a estimulação
+    STO                     Stop - Interrompe a estimulação
+    REP                     Report - Mostra todas as variáveis
+    MSG                     Messages - Ativa ou desativa as mensagens de início/fim
+
+    AAA-BBB0000 -> AAA = comando, BBB = subcomando, 0000 = valor
+
+***********************
+Fazer com o que o mesmo botão de atualizar seja o de iniciar.
+O botão por padrão vai ser de atualizar. Quando ele for apertado, ele vira iniciar. Quando qualquer alteração ocorrer, ele volta a ser atualizar.
+
+***********************
