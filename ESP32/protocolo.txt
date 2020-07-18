@@ -17,7 +17,9 @@ serial e irá definir os parâmetros da eletroestimulação, sendo estes:
     Largura de spike                (spk_width)             SKW             us
 
     
-
+    *************
+    ARRUMAR POTENCIÔMETRO PRA VER A CORRENTE MÁXIMA E ARRUMAR A ESCALA DO DAC
+    *************
     
 
     Outros protocolos:
@@ -28,6 +30,11 @@ serial e irá definir os parâmetros da eletroestimulação, sendo estes:
                             WFM-TRI - Triangular
                             WFM-DTS - Dente de Serra
                             WFM-SQR - Quadrada
+
+    IDR-XXX                 Define a direção da corrente
+                            IDR-ANO - Anódica   ==> CATODO DO ELETRODO COMO POSITIVO (circulo de fora, onde tá o fio vermelho)
+                            IDR-CAT - Catódica  ==> ANODO DO ELETRODO COMO POSITIVO
+                            IDR-BID - Bi-direcional
                             
     STA                     Start - Inicia a estimulação
     STO                     Stop - Interrompe a estimulação
@@ -35,6 +42,10 @@ serial e irá definir os parâmetros da eletroestimulação, sendo estes:
     MSG                     Messages - Ativa ou desativa as mensagens de início/fim
 
     AAA-BBB0000 -> AAA = comando, BBB = subcomando, 0000 = valor
+
+    INITIATED   => Quando inicia a estimulação
+    STOPPED     => Quando acaba a estimulação
+    OK!         => Quando os parâmetros são atualizados
 
 ***********************
 Fazer com o que o mesmo botão de atualizar seja o de iniciar.

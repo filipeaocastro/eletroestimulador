@@ -33,6 +33,7 @@
             this.numericUpDown_estimuloAtual = new System.Windows.Forms.NumericUpDown();
             this.label_estimuloAtual = new System.Windows.Forms.Label();
             this.groupBox_tipoOnda = new System.Windows.Forms.GroupBox();
+            this.radioButton_tipoDenteDeSerra = new System.Windows.Forms.RadioButton();
             this.radioButton_tipoTriangular = new System.Windows.Forms.RadioButton();
             this.radioButton_tipoQuadrada = new System.Windows.Forms.RadioButton();
             this.radioButton_tipoSenoide = new System.Windows.Forms.RadioButton();
@@ -82,6 +83,7 @@
             // checkBox_manterAmp
             // 
             this.checkBox_manterAmp.AutoSize = true;
+            this.checkBox_manterAmp.Enabled = false;
             this.checkBox_manterAmp.Location = new System.Drawing.Point(144, 110);
             this.checkBox_manterAmp.Name = "checkBox_manterAmp";
             this.checkBox_manterAmp.Size = new System.Drawing.Size(107, 17);
@@ -92,6 +94,7 @@
             // checkBox_manterFreq
             // 
             this.checkBox_manterFreq.AutoSize = true;
+            this.checkBox_manterFreq.Enabled = false;
             this.checkBox_manterFreq.Location = new System.Drawing.Point(12, 110);
             this.checkBox_manterFreq.Name = "checkBox_manterFreq";
             this.checkBox_manterFreq.Size = new System.Drawing.Size(112, 17);
@@ -101,6 +104,7 @@
             // 
             // numericUpDown_estimuloAtual
             // 
+            this.numericUpDown_estimuloAtual.Enabled = false;
             this.numericUpDown_estimuloAtual.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.numericUpDown_estimuloAtual.Location = new System.Drawing.Point(148, 81);
             this.numericUpDown_estimuloAtual.Maximum = new decimal(new int[] {
@@ -125,6 +129,7 @@
             // label_estimuloAtual
             // 
             this.label_estimuloAtual.AutoSize = true;
+            this.label_estimuloAtual.Enabled = false;
             this.label_estimuloAtual.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_estimuloAtual.Location = new System.Drawing.Point(54, 83);
             this.label_estimuloAtual.Name = "label_estimuloAtual";
@@ -134,30 +139,43 @@
             // 
             // groupBox_tipoOnda
             // 
+            this.groupBox_tipoOnda.Controls.Add(this.radioButton_tipoDenteDeSerra);
             this.groupBox_tipoOnda.Controls.Add(this.radioButton_tipoTriangular);
             this.groupBox_tipoOnda.Controls.Add(this.radioButton_tipoQuadrada);
             this.groupBox_tipoOnda.Controls.Add(this.radioButton_tipoSenoide);
             this.groupBox_tipoOnda.Location = new System.Drawing.Point(12, 33);
             this.groupBox_tipoOnda.Name = "groupBox_tipoOnda";
-            this.groupBox_tipoOnda.Size = new System.Drawing.Size(239, 42);
+            this.groupBox_tipoOnda.Size = new System.Drawing.Size(328, 42);
             this.groupBox_tipoOnda.TabIndex = 18;
             this.groupBox_tipoOnda.TabStop = false;
             this.groupBox_tipoOnda.Text = "Tipo de onda";
             // 
+            // radioButton_tipoDenteDeSerra
+            // 
+            this.radioButton_tipoDenteDeSerra.AutoSize = true;
+            this.radioButton_tipoDenteDeSerra.Enabled = false;
+            this.radioButton_tipoDenteDeSerra.Location = new System.Drawing.Point(227, 19);
+            this.radioButton_tipoDenteDeSerra.Name = "radioButton_tipoDenteDeSerra";
+            this.radioButton_tipoDenteDeSerra.Size = new System.Drawing.Size(95, 17);
+            this.radioButton_tipoDenteDeSerra.TabIndex = 3;
+            this.radioButton_tipoDenteDeSerra.Text = "Dente de serra";
+            this.radioButton_tipoDenteDeSerra.UseVisualStyleBackColor = true;
+            // 
             // radioButton_tipoTriangular
             // 
             this.radioButton_tipoTriangular.AutoSize = true;
+            this.radioButton_tipoTriangular.Enabled = false;
             this.radioButton_tipoTriangular.Location = new System.Drawing.Point(149, 19);
             this.radioButton_tipoTriangular.Name = "radioButton_tipoTriangular";
             this.radioButton_tipoTriangular.Size = new System.Drawing.Size(72, 17);
             this.radioButton_tipoTriangular.TabIndex = 2;
-            this.radioButton_tipoTriangular.TabStop = true;
             this.radioButton_tipoTriangular.Text = "Triangular";
             this.radioButton_tipoTriangular.UseVisualStyleBackColor = true;
             // 
             // radioButton_tipoQuadrada
             // 
             this.radioButton_tipoQuadrada.AutoSize = true;
+            this.radioButton_tipoQuadrada.Checked = true;
             this.radioButton_tipoQuadrada.Location = new System.Drawing.Point(76, 19);
             this.radioButton_tipoQuadrada.Name = "radioButton_tipoQuadrada";
             this.radioButton_tipoQuadrada.Size = new System.Drawing.Size(72, 17);
@@ -170,12 +188,11 @@
             // radioButton_tipoSenoide
             // 
             this.radioButton_tipoSenoide.AutoSize = true;
-            this.radioButton_tipoSenoide.Checked = true;
+            this.radioButton_tipoSenoide.Enabled = false;
             this.radioButton_tipoSenoide.Location = new System.Drawing.Point(6, 19);
             this.radioButton_tipoSenoide.Name = "radioButton_tipoSenoide";
             this.radioButton_tipoSenoide.Size = new System.Drawing.Size(64, 17);
             this.radioButton_tipoSenoide.TabIndex = 0;
-            this.radioButton_tipoSenoide.TabStop = true;
             this.radioButton_tipoSenoide.Text = "Senoide";
             this.radioButton_tipoSenoide.UseVisualStyleBackColor = true;
             // 
@@ -183,6 +200,7 @@
             // 
             this.button_TravarQteEstimulos.BackgroundImage = global::Eletroestimulador_v02.Properties.Resources._lock;
             this.button_TravarQteEstimulos.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button_TravarQteEstimulos.Enabled = false;
             this.button_TravarQteEstimulos.Location = new System.Drawing.Point(221, -1);
             this.button_TravarQteEstimulos.Name = "button_TravarQteEstimulos";
             this.button_TravarQteEstimulos.Size = new System.Drawing.Size(30, 32);
@@ -192,6 +210,7 @@
             // label_qteEstimulos
             // 
             this.label_qteEstimulos.AutoSize = true;
+            this.label_qteEstimulos.Enabled = false;
             this.label_qteEstimulos.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_qteEstimulos.Location = new System.Drawing.Point(13, 7);
             this.label_qteEstimulos.Name = "label_qteEstimulos";
@@ -201,6 +220,7 @@
             // 
             // numericUpDown_qteEstimulos
             // 
+            this.numericUpDown_qteEstimulos.Enabled = false;
             this.numericUpDown_qteEstimulos.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.numericUpDown_qteEstimulos.Location = new System.Drawing.Point(166, 5);
             this.numericUpDown_qteEstimulos.Maximum = new decimal(new int[] {
@@ -260,6 +280,7 @@
             this.textBox_amplitude.Name = "textBox_amplitude";
             this.textBox_amplitude.Size = new System.Drawing.Size(100, 20);
             this.textBox_amplitude.TabIndex = 31;
+            this.textBox_amplitude.TextChanged += new System.EventHandler(this.textBox_amplitude_TextChanged);
             // 
             // label_pulseWd
             // 
@@ -291,6 +312,7 @@
             this.textBox_pulseWd.Name = "textBox_pulseWd";
             this.textBox_pulseWd.Size = new System.Drawing.Size(86, 20);
             this.textBox_pulseWd.TabIndex = 41;
+            this.textBox_pulseWd.TextChanged += new System.EventHandler(this.textBox_pulseWd_TextChanged);
             // 
             // label_uApp
             // 
@@ -308,6 +330,7 @@
             this.textBox_freq.Name = "textBox_freq";
             this.textBox_freq.Size = new System.Drawing.Size(100, 20);
             this.textBox_freq.TabIndex = 34;
+            this.textBox_freq.TextChanged += new System.EventHandler(this.textBox_freq_TextChanged);
             // 
             // label_msDuracao
             // 
@@ -357,6 +380,7 @@
             this.textBox_duracao.Name = "textBox_duracao";
             this.textBox_duracao.Size = new System.Drawing.Size(100, 20);
             this.textBox_duracao.TabIndex = 37;
+            this.textBox_duracao.TextChanged += new System.EventHandler(this.textBox_duracao_TextChanged);
             // 
             // button_conectar
             // 
@@ -366,6 +390,7 @@
             this.button_conectar.TabIndex = 21;
             this.button_conectar.Text = "Conectar ao μC";
             this.button_conectar.UseVisualStyleBackColor = true;
+            this.button_conectar.Click += new System.EventHandler(this.button_conectar_Click);
             // 
             // button_iniciar
             // 
@@ -375,8 +400,10 @@
             this.button_iniciar.Name = "button_iniciar";
             this.button_iniciar.Size = new System.Drawing.Size(239, 42);
             this.button_iniciar.TabIndex = 20;
-            this.button_iniciar.Text = "Iniciar estimulação";
+            this.button_iniciar.Text = "Atualizar";
             this.button_iniciar.UseVisualStyleBackColor = true;
+            this.button_iniciar.TextChanged += new System.EventHandler(this.button_iniciar_TextChanged);
+            this.button_iniciar.Click += new System.EventHandler(this.button_iniciar_Click);
             // 
             // button_salvar
             // 
@@ -539,6 +566,7 @@
             this.groupBox_intervalo.Controls.Add(this.label_intervaloMax);
             this.groupBox_intervalo.Controls.Add(this.textBox_intervaloMax);
             this.groupBox_intervalo.Controls.Add(this.label_msIntervaloMin);
+            this.groupBox_intervalo.Enabled = false;
             this.groupBox_intervalo.Location = new System.Drawing.Point(12, 286);
             this.groupBox_intervalo.Name = "groupBox_intervalo";
             this.groupBox_intervalo.Size = new System.Drawing.Size(239, 115);
@@ -549,6 +577,7 @@
             // checkBox_aletorio
             // 
             this.checkBox_aletorio.AutoSize = true;
+            this.checkBox_aletorio.Enabled = false;
             this.checkBox_aletorio.Location = new System.Drawing.Point(44, 133);
             this.checkBox_aletorio.Name = "checkBox_aletorio";
             this.checkBox_aletorio.Size = new System.Drawing.Size(160, 17);
@@ -639,5 +668,6 @@
         private System.Windows.Forms.Label label_msIntervaloMin;
         private System.Windows.Forms.GroupBox groupBox_intervalo;
         private System.Windows.Forms.CheckBox checkBox_aletorio;
+        private System.Windows.Forms.RadioButton radioButton_tipoDenteDeSerra;
     }
 }

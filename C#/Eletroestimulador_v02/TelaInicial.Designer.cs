@@ -31,6 +31,7 @@
             this.label_eletroestimulador = new System.Windows.Forms.Label();
             this.button_carregar = new System.Windows.Forms.Button();
             this.button_novo = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label_eletroestimulador
@@ -64,11 +65,22 @@
             this.button_novo.UseVisualStyleBackColor = true;
             this.button_novo.Click += new System.EventHandler(this.button_novo_Click);
             // 
+            // button1
+            // 
+            this.button1.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(134, 188);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(221, 33);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "ESTIMULAÇÃO VIA SPIKES";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
             // TelaInicial
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(486, 233);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.button_novo);
             this.Controls.Add(this.button_carregar);
             this.Controls.Add(this.label_eletroestimulador);
@@ -83,6 +95,7 @@
         private System.Windows.Forms.Label label_eletroestimulador;
         private System.Windows.Forms.Button button_carregar;
         private System.Windows.Forms.Button button_novo;
+        private System.Windows.Forms.Button button1;
     }
 }
 
