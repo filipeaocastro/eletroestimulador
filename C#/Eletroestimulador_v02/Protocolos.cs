@@ -8,10 +8,10 @@ namespace Eletroestimulador_v02
 {
     class Protocolos
     {
-        public const string amplitude = "IAM";
-        public const string frequencia = "FRQ";
-        public const string larguraPulso = "BDW";
-        public const string duracaoTotal = "TDR";
+        public const string amplitude = "IAM-";
+        public const string frequencia = "FRQ-";
+        public const string larguraPulso = "BDW-";
+        public const string duracaoTotal = "TDR-";
         //public const string duracaoBurst = "BRW";
         //public const string intervaloBurst = "BRI";
         //public const string duracaoTB = "BTW";
@@ -34,9 +34,9 @@ namespace Eletroestimulador_v02
         public const string wf_sawtooth = "WFM-DTS";
         public const string wf_square = "WFM-SQR";
 
-        public const string iDirection_anodic = "IDR_ANO";
-        public const string iDirection_cathodic = "IDR_CAT";
-        public const string iDirection_biDirectional = "IDR_BID";
+        public const string iDirection_anodic = "IDR-ANO";
+        public const string iDirection_cathodic = "IDR-CAT";
+        public const string iDirection_biDirectional = "IDR-BID";
 
 
         public List<string> Cods()

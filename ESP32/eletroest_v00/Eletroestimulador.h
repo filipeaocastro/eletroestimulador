@@ -9,7 +9,7 @@
 #define CANAL_PWM 0         // Canal de pwm utilizado (0 a 15)
 #define PWM_RESOLUTION 12   // Resolução (1 a 16 bits) (Quanto maior a resolução, menor a freq máxima)
 
-#define SQUARE_WAVE_RES 1024
+#define SQUARE_WAVE_RES 256
 
 // Estados do sistema
 typedef enum{

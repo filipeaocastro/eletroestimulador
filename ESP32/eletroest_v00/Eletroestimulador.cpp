@@ -85,8 +85,8 @@ void Eletroestimulador::checkSerial(estados *estadoAtual)
         else if(cod.equals(String("FRQ")))
         {
             freq = valor;
-            period = (uint32_t)(1 / (double)freq);   // Adquire o período em s
-            period *= 1000000;  // Transforma pra us
+            period = (uint32_t)(1000000 / freq);   // Adquire o período em us
+            //period *= 1000000;  // Transforma pra us
             //period = (uint32_t)(100000000.0 / (double)freq);    // Transforma pra unidades de 0,01 ns
         }
 
@@ -105,7 +105,8 @@ void Eletroestimulador::checkSerial(estados *estadoAtual)
             if(cod.equals(String("SQR")))
             {
                 onda = QUADRADA;
-                setupOndaQuad();
+                setupOndaQuad();    // Define os parâmetros para a geração de onda quadrada
+                Serial.write("OK!\n");  // Confirma para o sistema que os dados estão atualizados
             }
 
             if(cod.equals(String("SPK")))
@@ -214,12 +215,13 @@ void Eletroestimulador::checkSerial_Fast(estados *estadoAtual)
     {
         uint8_t buf_length = 0;
         uint8_t buf[BUF_LENGTH_SMALL] = {'f'};
+        //Serial.write("Checou\n");
 
         // Lê até a quebra de linha ('\n')
         buf_length = (uint8_t)Serial.readBytesUntil('\n', buf, BUF_LENGTH_SMALL);
 
         // Sai do loop caso a leitura tenha tamanho 0 (para evitar quaisquer erros de leitura)
-        if(buf_length == 0 || buf_length > 3) // Sai do loop caso seja maior que 3 (o terminador é descartado)
+        if(buf_length == 0) // Sai do loop caso seja maior que 3 (o terminador é descartado)
             break;
 
         // Se a mensagem for 'STO', ele volta pro STAND_BY
@@ -234,10 +236,12 @@ void Eletroestimulador::checkSerial_Fast(estados *estadoAtual)
 void Eletroestimulador::geraOndaQuad(estados *estadoAtual)
 {
     long tempo_on_total = millis();
-    long tempo_step = 0;
+    uint32_t tempo_step = 0;
     uint8_t valor_saida = 127;
     uint8_t multiplier = 1;
     uint8_t sum = 0;
+
+    Serial.write("INITIATED\n");
 
     // Ajusta a direção de saída de corrente
     switch (direcao_corrente)
@@ -260,35 +264,47 @@ void Eletroestimulador::geraOndaQuad(estados *estadoAtual)
             multiplier = 2;
             break;
     }
+
+    uint8_t conta = valor_DAC * multiplier + sum;
+    uint16_t newStep = (uint16_t)step;
     
 
     // Só sai do while se receber o comando STO ou atingir o tempo máximo
     while (true)
     {
-        for(int i = 0; i < SQUARE_WAVE_RES; i++) // Controla a saída da onda
+        for(uint16_t i = 0; i < SQUARE_WAVE_RES; i++) // Controla a saída da onda
         {
-            valor_saida = (valor_DAC * multiplier) + sum;
+            //Serial.println(i);
+            valor_saida = ondaQ[i] * conta;
             dacWrite(pino_dac, valor_saida); // Controla a saída do DAC de acordo com a onda guardada em ondaQ
             tempo_step = micros();
 
             // Mantém a saída do DAC de acordo com o tempo entre cada amostra
-            while(micros() - tempo_step < step);
-            //delayMicroseconds(step); 
+            while(micros() - tempo_step < newStep);
+            //delayMicroseconds(newStep); 
         }
 
         // Checa o estado da serial a cada ciclo da onda
         checkSerial_Fast(estadoAtual);  // Verifica se o comando STO não chegou
+        /*
+        if(*estadoAtual == EE_SQUARE)
+            Serial.write("Ta em EE_SQUARE\n");
 
+        else
+            Serial.write("Nao ta em EE_SQUARE\n");
+            */
         // Caso o estado mude, ele sai da função
         if(*estadoAtual != EE_SQUARE)
         {
             dacWrite(pino_dac, 128);
+            Serial.write("STOPPED\n");
             return;
         }
         // Sai da função se atingir o tempo máximo
         if( ((millis() - tempo_on_total) > total_duration) && (total_duration != 0))
         {
             *estadoAtual = STAND_BY;
+            Serial.write("STOPPED\n");
             return;
         }
     }
@@ -300,8 +316,14 @@ void Eletroestimulador::geraOndaQuad(estados *estadoAtual)
 void Eletroestimulador::setupOndaQuad()
 {
     uint16_t samples;
+
+    /*
+    ************************* TEM COISA ERRADA NO CALCULO DE LARGURA DE BANDA ************************
+    */
     
-    step = period / SQUARE_WAVE_RES;  // Tempo entre uma amostra e outra
+    step = float(period) / float(SQUARE_WAVE_RES);  // Tempo entre uma amostra e outra
+    if (step <= 0)
+        step = 1;
     samples = uint16_t(bandwidth / step);     // Quantidade de amostras no tempo de bandwidth
 
     // Proteção caso o número de amostras ultrapasse a quantidade máxima
@@ -316,6 +338,23 @@ void Eletroestimulador::setupOndaQuad()
         for(int i = samples; i < SQUARE_WAVE_RES; i++)
             ondaQ[i] = 0;
     }
+    
+    Serial.write("step = ");
+    Serial.println(step);
+    Serial.write("period = ");
+    Serial.println(period);
+    Serial.write("samples = ");
+    Serial.println(samples);
+
+    for(int i = 0; i < SQUARE_WAVE_RES; i++)
+    {
+        if(ondaQ[i] == 0)
+            Serial.write("_");
+        else
+            Serial.write("-");
+    }
+    Serial.println();
+
 
 
     //ledcSetup(CANAL_PWM, freq, resolution);

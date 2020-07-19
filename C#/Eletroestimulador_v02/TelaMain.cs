@@ -87,22 +87,29 @@ namespace Eletroestimulador_v02
                     Console.WriteLine(txt);
                     string newLabel = "";
 
-                    // STOPED quer dizer que a estimulação chegou ao fim, então a label do botão muda 
+                    // STOPPED quer dizer que a estimulação chegou ao fim, então a label do botão muda 
                     //  pra "Iniciar"
                     if (txt.ToString().Equals("STOPPED"))
+                    {
                         newLabel = "Iniciar";
+                        changeState(newLabel);  // Função que muda o estado dos botões
+                    }
+                        
 
                     // Caso for INITIATED, a label muda pra "Parar"
                     else if (txt.ToString().Equals("INITIATED"))
+                    {
                         newLabel = "Parar";
+                        changeState(newLabel);  // Função que muda o estado dos botões
+                    }
+                        
 
                     // Ele retorna OK! quando atualizamos os dados no ESP e o botão vira "Iniciar"
                     else if (txt.ToString().Equals("OK!"))
+                    {
                         newLabel = "Iniciar";
-
-
-                    // Chama a função que muda o estado dos botões
-                    changeState(newLabel);
+                        changeState(newLabel);  // Função que muda o estado dos botões
+                    } 
                 }
             }
         }
@@ -126,8 +133,8 @@ namespace Eletroestimulador_v02
         }
 
         // Função que ativa e desativa o botão de 'Parar'
-        // >> Ressaltando que existe um evento ligado à mudança de estado do botão, que ativa e desativa 
-        //      outros componentes do form
+        // >> Ressaltando que existe um evento ligado à mudança da label do botão, que altera a 
+        //      máquina de estados do sistema
         void changeLabel(string newLabel)
         {
             button_iniciar.Text = newLabel;
@@ -137,7 +144,7 @@ namespace Eletroestimulador_v02
         * Essa função procura nos dispositivos do Windows um que possua o nome definido pelo barramento
          "CP2102 USB to UART Bridge Controller", identifica a porta serial deste e abre a porta.
         * 
-        * Retorna se a conexão ocorreu com sucesso.
+        * Retorna se a conexão ocorreu com ou sem sucesso.
         */
         private bool conectarESP()
         {
@@ -191,8 +198,6 @@ namespace Eletroestimulador_v02
 
         #endregion
 
-        #region Eventos dos botões de Atualizar/Iniciar e Conectar
-
         /*
          *  Fluxo de funcionamento do envio de dados e mudança de estados
          *  
@@ -220,8 +225,15 @@ namespace Eletroestimulador_v02
          *  ao comando que o sistema enviou. Logo, o sistema e o ESP são codependentes quanto ao seu 
          *  funcionamento.
          * 
-         */ 
+         */
 
+        #region Eventos dos botões de Atualizar/Iniciar e Conectar
+
+
+        /*
+         * Função que inicia a comunicação serial com o ESP e ativa a thread responsável por essa
+         * comunicação em background
+         */ 
         private void button_conectar_Click(object sender, EventArgs e)
         {
             try
@@ -242,7 +254,7 @@ namespace Eletroestimulador_v02
                     th.IsBackground = true;
                     th.Start();
 
-                    button_iniciar.Enabled = true;
+                    button_iniciar.Enabled = true;  // Ativa o botão iniciar
                 }
             }
             catch (Exception ex)
@@ -253,6 +265,9 @@ namespace Eletroestimulador_v02
 
         private void button_iniciar_Click(object sender, EventArgs e)
         {
+            // Proteção contra valores nulos nas textboxes
+            // Caso uma delas não possua um valor inserido, o sistema não permite que dados sejam
+            // enviados ao ESP.
             foreach (TextBox tb in textBoxes)
             {
                 if ((tb.Text == null) || (tb.Text == ""))
@@ -263,6 +278,21 @@ namespace Eletroestimulador_v02
                 }
             }
 
+            /*
+             * Switch (case) que define quais comandos serão enviados ao ESP de acordo com o estado
+             * do sistema quando ocorrer o clique no botão Iniciar/Atualizar/Parar
+             * 
+             * Se o sistema estiver ATIVO (eletroestimulação acontecendo) o botão estará com a label 
+             * "Parar", então o comando de parar a eletroestimulação é enviado ao ESP.
+             * 
+             * Se o sistema estiver ATUALIZADO (eletroestimulação pronta parar acontecer) o botão 
+             * estará com a label "Iniciar", então o comando de iniciar a eletroestimulação é 
+             * enviado ao ESP.
+             * 
+             * Se o sistema estiver DESATUALIZADO (dados presentes no ESP diferentes dos presentes nas
+             * textboxes) o botão estará com a label Atualizar, então os parâmetros atualizados serão
+             * enviados ao ESP.
+             */ 
             try
             {
                 switch (estadoAtual)
@@ -290,22 +320,31 @@ namespace Eletroestimulador_v02
             }
         }
 
+        /*
+         * A parte do sistema que muda a label do botão Iniciar é a thread de leitura da serial. Portanto,
+         * quando ocorre a mudança na label, este evento é ativado e o estado do sistema é alterado de
+         * acordo com a nova label do botão.
+         */ 
         private void button_iniciar_TextChanged(object sender, EventArgs e)
         {
             string texto = button_iniciar.Text;
 
+            // Switch (case) que relaciona a label com a alteração de estado do sistema
             switch (texto)
             {
                 case "Atualizar":
                     estadoAtual = estados_estimulacao.DESATUALIZADO;
+                    enableTBs(true);
                     break;
 
                 case "Parar":
                     estadoAtual = estados_estimulacao.ATIVO;
+                    enableTBs(false);
                     break;
 
                 case "Iniciar":
                     estadoAtual = estados_estimulacao.ATUALIZADO;
+                    enableTBs(true);
                     break;
             }
         }
@@ -324,24 +363,49 @@ namespace Eletroestimulador_v02
             //bool rnd_on = checkBox_intervaloTBaleat.Checked;
             string dados = "";
 
+            // Chama a função Cods() da classe Protocolos que coloca os códigos correspondentes a cada textbox
+            // num objeto do tipo List
             Protocolos protocolos = new Protocolos();
             List<string> codigos = protocolos.Cods();
 
             // Engloba os códigos e seus respectivos valores (duas listas) num só objeto iterável
             var comandos = textBoxes.Zip(codigos, (val, cod) => new { Valor = val, Codigos = cod });
 
-            // Coloca os protocolos em sequência com o valor
+            // Coloca os protocolos em sequência com o valor => AAA-XXXX (AAA = código, XXXX = valor)
             foreach (var ad in comandos)
             {
                 dados += ad.Codigos + ad.Valor.Text + "\n";
             }
 
-            dados += verificaDirecao();
-            dados += verificaOnda();
+            dados += verificaDirecao(); // Verifica os radiobuttons de direção da corrente
+            dados += verificaOnda();    // Verifica os radiobuttons relacionados à forma de onda
+
+            /* Devido ao sistema trabalhar com uma precisão de 1 us e resolução de 256 pontos, frequências
+                acima de 3900 Hz deixam o passo entre cada ponto menor que 1 us. Exemplo:
+                Frequência: 3900 Hz, Período = 256 us 
+                Passo entre cada amostra: Período/pontos = 256/256 = 1 us
+
+                
+                Frequência = 4000, Período = 250 us
+                Passo entre cada amostra: Período/pontos = 250/256 = 0.98 us
+                Como a resolução do sistema é de 1 us, passos menores não são possíveis.
+
+                Para aumentar a resolução, deve-se diminuir a quantidade de pontos (seria a resulução 
+                da onda, nesse caso)
+            */
+            if(Convert.ToInt32(textBox_freq.Text) > 3900)
+                MessageBox.Show("O sistema pode não operar com a precisão necessária em frequências " +
+                    "acima de 3900 Hz!", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+            // Escreve os dados a serem enviado no console, para fins de depuração
+            Console.Write(dados);
 
             return dados;
         }
 
+        /*
+         * Adiciona as textboxes da interface na lista "textBoxes"
+         */
         private void adicionaTBs()
         {
             textBoxes.Add(textBox_amplitude);
@@ -350,6 +414,11 @@ namespace Eletroestimulador_v02
             textBoxes.Add(textBox_pulseWd);
         }
 
+
+        /*
+         * Confere os radiobuttons relacionados à forma de onda e retorna o código de protocolo 
+         * relacionado à mesma
+         */
         private string verificaOnda()
         {
             if (radioButton_tipoSenoide.Checked == true)
@@ -362,6 +431,10 @@ namespace Eletroestimulador_v02
                 return Protocolos.wf_sawtooth + "\n";
         }
 
+        /*
+         * Confere os radiobuttons relacionados à direção da corrente e retorna o código de protocolo 
+         * relacionado à mesma
+         */
         private string verificaDirecao()
         {
             if (radioButton_tipoAnodica.Checked == true)
@@ -372,16 +445,31 @@ namespace Eletroestimulador_v02
                 return Protocolos.iDirection_biDirectional + "\n";
         }
 
+        /*
+         * Quando chamada, essa função muda o estado do sistema para DESATUALIZADO e muda a label
+         * do botão Iniciar para "Atualizar"
+         */ 
         private void mudaLabelAtualizar()
         {
             estadoAtual = estados_estimulacao.DESATUALIZADO;
             button_iniciar.Text = "Atualizar";
         }
 
+        private void enableTBs(bool enabled)
+        {
+            foreach (TextBox tb in textBoxes)
+                tb.Enabled = enabled;
+        }
+
         #endregion
 
         
-
+        /*
+         * Sempre que o texto de uma texbox é alterado, significa que os dados presentes no ESP estão
+         * desatualizados em relação aos presentes nas textboxes. Portanto, sempre que ocorre uma 
+         * alteração nas mesmas, o botão Iniciar muda sua label para Atualizar e o sistema muda seu
+         * estado para DESATUALIZADO.
+         */ 
         #region Eventos das textboxes para avisar que houve alterações
 
         private void textBox_amplitude_TextChanged(object sender, EventArgs e)
