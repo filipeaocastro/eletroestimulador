@@ -23,11 +23,19 @@ namespace Eletroestimulador_v02
         Thread th;
 
         OpenFileDialog openFileDialog1;
+        private FolderBrowserDialog FolderBrowserDialog;
         private string spikesTxt = "";
         private bool[] spikes;
         private UInt16 index_spk = 0;
         private int duration = 0;
         private int samples = 0;
+
+        private int totalTextures = 0;
+        private int aleatTexture = 1;
+        Random rand;
+
+        // Variáveis para salvar no arquivo txt
+        private int nTextura = 0;   // Numero da textura
 
         private enum estados_estimulacao
         {
@@ -44,40 +52,7 @@ namespace Eletroestimulador_v02
             textBox_amplitude.Text = "";
             setTimer();
 
-            openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Title = "Selecione o arquivo de spikes";
-            openFileDialog1.Filter = "Text files(*.txt)|*.txt|All files (*.*)|*.*";
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                string reading;
-                try
-                {
-                    var sr = new StreamReader(openFileDialog1.FileName);
-                    //label_fileNameRO.Text = sr.ReadToEnd();
-
-
-                    reading = sr.ReadToEnd();
-                    reading = reading.Trim();
-                    for (int i = 0; i < reading.Length; i++)
-                    {
-                        if (reading[i] != ',')
-                            spikesTxt += reading[i];
-                    }
-
-                    spikes = new bool[spikesTxt.Length];
-
-
-
-                    setParameterLabels(openFileDialog1);
-
-
-                }
-                catch (SecurityException ex)
-                {
-                    MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}");
-                }
-            }
+            
 
         }
 
@@ -231,6 +206,7 @@ namespace Eletroestimulador_v02
                     th.Start();
 
                     button_update.Enabled = true;  // Ativa o botão iniciar
+                    button_connectUc.Enabled = false;   // Desativa o botão de conectar
                 }
             }
             catch (Exception ex)
@@ -335,7 +311,7 @@ namespace Eletroestimulador_v02
             //bool rnd_on = checkBox_intervaloTBaleat.Checked;
             string dados = "";
 
-            dados += Protocolos.larguraPulso + (trackBar_spikeWidth.Value * 100).ToString() + "\n";   // Largura do spike
+            //dados += Protocolos.larguraPulso + (trackBar_spikeWidth.Value * 100).ToString() + "\n";   // Largura do spike
             dados += Protocolos.amplitude + textBox_amplitude.Text + "\n"; // Amplitude do spike
             dados += verificaDirecao(); // Verifica os radiobuttons de direção da corrente
             dados += Protocolos.wf_spike + "\n";    // Indica que a forma de onda é por spikes
@@ -348,16 +324,16 @@ namespace Eletroestimulador_v02
 
         private void trackBar_spikeWidth_Scroll(object sender, EventArgs e)
         {
-            label_spikeWidthValue.Text = (Convert.ToDouble(trackBar_spikeWidth.Value) / 10.0).ToString() + " ms";
+            //label_spikeWidthValue.Text = (Convert.ToDouble(trackBar_spikeWidth.Value) / 10.0).ToString() + " ms";
             mudaLabelAtualizar();
         }
 
         private void setParameterLabels(OpenFileDialog ofd)
         {
             int nSpikes = 0;
-            label_fileNameW.Text = ofd.SafeFileName;
+            //label_fileNameW.Text = ofd.SafeFileName;
             samples = spikesTxt.Length;
-            label_sampleW.Text = samples.ToString();
+            //label_sampleW.Text = samples.ToString();
             for (int i = 0; i < spikesTxt.Length; i++)
                 if (spikesTxt[i] == 1)
                     nSpikes++;
@@ -404,9 +380,9 @@ namespace Eletroestimulador_v02
          */
         private string verificaDirecao()
         {
-            if (radioButton_tipoAnodica.Checked == true)
+            if (radioButton_anodic.Checked == true)
                 return Protocolos.iDirection_anodic + "\n";
-            else if (radioButton_tipoCatodica.Checked == true)
+            else if (radioButton_cathodic.Checked == true)
                 return Protocolos.iDirection_cathodic + "\n";
             else
                 return Protocolos.iDirection_biDirectional + "\n";
@@ -442,5 +418,84 @@ namespace Eletroestimulador_v02
         {
             Application.Exit();
         }
+
+        private void button_toggleVisible_Click(object sender, EventArgs e)
+        {
+            componentsVisible();
+        }
+
+        private void componentsVisible()
+        {
+            panel_toggle.Visible = !panel_toggle.Visible;
+        }
+
+        private void numericUpDown_textureNumber_ValueChanged(object sender, EventArgs e)
+        {
+            mudaLabelAtualizar();
+        }
+
+        private void checkBox_applyParameters_CheckedChanged(object sender, EventArgs e)
+        {
+            mudaLabelAtualizar();
+        }
+
+        private void button_loadTex_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog = new FolderBrowserDialog();
+            if (Environment.UserName == "Filipe Augusto")
+                FolderBrowserDialog.SelectedPath = "C:\\Users\\Filipe Augusto\\Google Drive\\UFU\\BioLab\\TCC\\texturas";
+            //FolderBrowserDialog.Title = "Selecione a pasta";
+            //openFileDialog1.Filter = "Text files(*.txt)|*.txt";
+            if (FolderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                string reading;
+                try
+                {
+                    var folderPath = FolderBrowserDialog.SelectedPath;
+                    Console.WriteLine(folderPath.ToString());
+                    string[] files = Directory.GetFiles(FolderBrowserDialog.SelectedPath);
+                    foreach (string str in files)
+                    {
+                        Console.WriteLine(str);
+                    }
+
+                    totalTextures = files.Length;
+                    numericUpDown_textureNumber.Maximum = totalTextures;
+                    rand = new Random();
+                    aleatTexture = rand.Next(1, totalTextures + 1);
+                    //MessageBox.Show(aleatTexture.ToString());
+                    var sr = new StreamReader(files[aleatTexture - 1]);
+                    
+                    Console.WriteLine(files[aleatTexture - 1]);
+                    //MessageBox.Show(sr.ReadToEnd());
+
+
+                    reading = sr.ReadToEnd();
+                    reading = reading.Trim();
+                    for (int i = 0; i < reading.Length; i++)
+                    {
+                        if (reading[i] != ',')
+                            spikesTxt += reading[i];
+                    }
+
+                    spikes = new bool[spikesTxt.Length];
+
+                    button_toggleVisible.Enabled = true;
+                    button_connectUc.Enabled = true;
+                }
+                catch (SecurityException ex)
+                {
+                    MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}");
+                }
+            }
+        }
     }
 }
+
+
+/* TO DO:
+ * 
+ *  Criar protocolos para enviar a quantidade total de spikes e carregar eles no ESP.
+ * 
+ */ 
