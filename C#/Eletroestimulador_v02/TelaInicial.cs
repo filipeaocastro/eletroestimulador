@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Eletroestimulador_v02
 {
@@ -18,6 +19,7 @@ namespace Eletroestimulador_v02
         }
 
         TelaMain telaMain;
+        TelaSpikes telaSpikes;
 
         private void button_novo_Click(object sender, EventArgs e)
         {
@@ -34,6 +36,14 @@ namespace Eletroestimulador_v02
             label_eletroestimulador.Visible = false;
             button_carregar.Visible = false;
             button_novo.Visible = false;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            hideCtrls();
+            telaSpikes = new TelaSpikes();
+            this.Hide();
+            telaSpikes.Show();
         }
     }
 }

@@ -29,9 +29,12 @@
 
 estados estado = STAND_BY;
 
+hw_timer_t * timer = NULL;
 Eletroestimulador eest(PINO_SAIDA);
 
 static byte formasDeOnda[TiposDeOnda][QteAmostras] = {0};
+
+bool mudouDAC = false;
 
 
 
@@ -46,8 +49,13 @@ static byte formasDeOnda[TiposDeOnda][QteAmostras] = {0};
 void setup() 
 {
   dacWrite(PINO_SAIDA, 127);
+  mudouDAC = false;
   Serial.begin(115200);
   pinMode(27, INPUT_PULLUP); // Botão
+
+  timer = timerBegin(0, 8, true);  // inicia com o passo de 0.1 us
+  timerAttachInterrupt(timer, &timerISR, true);
+  eest.configTimer(timer);
 
 }
 
@@ -56,18 +64,26 @@ void loop()
   switch (estado)
   {
     case STAND_BY:
+      if(mudouDAC)
+      {
+        dacWrite(PINO_SAIDA, 127);
+        mudouDAC = false;
+      }
       eest.checkSerial(&estado);
       break;
 
     case EE_SPK:
-
+      mudouDAC = true;
+      eest.geraSpike(&estado);
       break;
 
     case EE_WF:
+      mudouDAC = true;
       //geraFormaDeOnda();
       break;
 
     case EE_SQUARE:
+      mudouDAC = true;
       eest.geraOndaQuad(&estado);
       break;
   }
@@ -131,4 +147,7 @@ void ondaQuad(int direcao, int amp, float pulseWidth)
   }
 }
 
-
+void timerISR()
+{
+    eest.IRQtimer();
+}

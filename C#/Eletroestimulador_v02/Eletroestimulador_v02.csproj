@@ -61,6 +61,12 @@
     <Compile Include="TelaMain.Designer.cs">
       <DependentUpon>TelaMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="TelaSpikes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TelaSpikes.Designer.cs">
+      <DependentUpon>TelaSpikes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Win32DeviceMgmt.cs" />
     <EmbeddedResource Include="TelaInicial.resx">
       <DependentUpon>TelaInicial.cs</DependentUpon>
@@ -77,6 +83,9 @@
     </Compile>
     <EmbeddedResource Include="TelaMain.resx">
       <DependentUpon>TelaMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TelaSpikes.resx">
+      <DependentUpon>TelaSpikes.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

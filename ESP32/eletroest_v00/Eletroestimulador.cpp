@@ -46,6 +46,7 @@ void Eletroestimulador::checkSerial(estados *estadoAtual)
                 
                 case SPIKE:
                     *estadoAtual = EE_SPK;
+                    Serial.write("INITIATED\n");
                     break;
 
                 default:
@@ -63,15 +64,15 @@ void Eletroestimulador::checkSerial(estados *estadoAtual)
         // Define a corrente de saída e já define o valor de saída do DAC em bits
         else if(cod.equals(String("IAM")))
         {
-            if(valor < 360) valor = 360;
-            if(valor > 1823) valor = 1823;
+            if(valor < 0) valor = 0;
+            if(valor > 5000) valor = 5000;
             i_amp = valor;  // Valor da corrente em uA
 
             // tensão = 1k5 * corrente
             //float tensao = 1500 * (i_amp * 0.000001); // Converte de uA pra A
             //tensao *= 100; // Transforma de 1,5 pra 150
             //valor_DAC = map((uint16_t)tensao, 54, 274, 0, 4095);    // Converte pra saida do DAC em 8 bits de resolução
-            valor_DAC = map(i_amp, 360, 1823, 0, 127);
+            valor_DAC = map(i_amp, 0, 5000, 0, 127);
             //Serial.println(valor_DAC);
 
             //analogWrite(SAIDA_DAC, saida_DAC);
@@ -112,7 +113,8 @@ void Eletroestimulador::checkSerial(estados *estadoAtual)
             if(cod.equals(String("SPK")))
             {
                 onda = SPIKE;
-                //setupOndaQuad();
+                setupSpike();
+                Serial.write("OK!\n");  // Confirma para o sistema que os dados estão atualizados
             }
 
             if(cod.equals(String("SIN")))
@@ -236,10 +238,13 @@ void Eletroestimulador::checkSerial_Fast(estados *estadoAtual)
 void Eletroestimulador::geraOndaQuad(estados *estadoAtual)
 {
     long tempo_on_total = millis();
+    long tempo_teste = millis();
     uint32_t tempo_step = 0;
     uint8_t valor_saida = 127;
     uint8_t multiplier = 1;
     uint8_t sum = 0;
+    uint8_t valorUp = 0;
+    uint8_t valorDown = 0;
 
     Serial.write("INITIATED\n");
 
@@ -248,44 +253,97 @@ void Eletroestimulador::geraOndaQuad(estados *estadoAtual)
     {
         // Catodica: 0 a 1.65 V
         case CATODICA:
-            sum = 0;
-            multiplier = 1;
+            //sum = 0;
+            //multiplier = 1;
+            valorUp = 127 - valor_DAC;
+            valorDown = 127;
             break;
 
         // Anodica 1.65 a 3.3 V
         case ANODICA:
-            sum = 128;
-            multiplier = 1;
+            //sum = 128;
+            //multiplier = 1;
+            valorUp = 128 + valor_DAC;
+            valorDown = 127;
             break;
 
         // Bidirecional 0 a 3.3 V
         case BIDIRECIONAL:
             sum = 0;
             multiplier = 2;
+            valorUp = 128 + valor_DAC;
+            valorDown = 127 - valor_DAC;
             break;
     }
 
-    uint8_t conta = valor_DAC * multiplier + sum;
+    //uint8_t conta = (valor_DAC + sum) * multiplier;
+    if(valorUp > 255) valorUp = 255;
+    if(valorDown > 255) valorDown = 255;
+
+    if(valorUp < 0) valorUp = 0;
+    if(valorDown < 0) valorDown = 0;
+    
     uint16_t newStep = (uint16_t)step;
     
+
+    /************* timer **************/
+    uint32_t tempoTotal = total_duration * 10000;    // Converte o total duration pra us pra comparar com o que o timer incrementa
+
+    Serial.write("tempoTotal = ");
+    Serial.println(tempoTotal);
+
+    portENTER_CRITICAL(&timerMux);
+    indexWave = 0;
+    countTotal = 0;
+    portEXIT_CRITICAL(&timerMux);
+
+    if(ondaQ[indexWave] == 1)
+    {
+        portENTER_CRITICAL(&timerMux);
+        DAC_out =  valorUp; // Controla a saída do DAC de acordo com a onda guardada em ondaQ
+        portEXIT_CRITICAL(&timerMux);
+    }    
+    else
+    {
+        portENTER_CRITICAL(&timerMux);
+        DAC_out =  valorDown; // Controla a saída do DAC de acordo com a onda guardada em ondaQ
+        portEXIT_CRITICAL(&timerMux); 
+    }
+    timerAlarmWrite(timer_INT, nTicks, true);
+    timerAlarmEnable(timer_INT);
+    
+    
+
+    
+
 
     // Só sai do while se receber o comando STO ou atingir o tempo máximo
     while (true)
     {
+        /*
         for(uint16_t i = 0; i < SQUARE_WAVE_RES; i++) // Controla a saída da onda
         {
             //Serial.println(i);
-            valor_saida = ondaQ[i] * conta;
-            dacWrite(pino_dac, valor_saida); // Controla a saída do DAC de acordo com a onda guardada em ondaQ
+            //valor_saida = ondaQ[i] * conta;
+            
+            if(ondaQ[i] == 1)
+                dacWrite(pino_dac, valorUp); // Controla a saída do DAC de acordo com a onda guardada em ondaQ
+            else
+            {
+                dacWrite(pino_dac, valorDown); // Controla a saída do DAC de acordo com a onda guardada em ondaQ
+            }
+
+
+            //dacWrite(pino_dac, valor_saida); // Controla a saída do DAC de acordo com a onda guardada em ondaQ
             tempo_step = micros();
 
             // Mantém a saída do DAC de acordo com o tempo entre cada amostra
             while(micros() - tempo_step < newStep);
             //delayMicroseconds(newStep); 
-        }
+        }*/
 
         // Checa o estado da serial a cada ciclo da onda
-        checkSerial_Fast(estadoAtual);  // Verifica se o comando STO não chegou
+        //checkSerial_Fast(estadoAtual);  // Verifica se o comando STO não chegou
         /*
         if(*estadoAtual == EE_SQUARE)
             Serial.write("Ta em EE_SQUARE\n");
@@ -294,21 +352,81 @@ void Eletroestimulador::geraOndaQuad(estados *estadoAtual)
             Serial.write("Nao ta em EE_SQUARE\n");
             */
         // Caso o estado mude, ele sai da função
+        /*
         if(*estadoAtual != EE_SQUARE)
         {
             dacWrite(pino_dac, 128);
             Serial.write("STOPPED\n");
             return;
-        }
+        }*/
         // Sai da função se atingir o tempo máximo
+        /*
         if( ((millis() - tempo_on_total) > total_duration) && (total_duration != 0))
         {
             *estadoAtual = STAND_BY;
             Serial.write("STOPPED\n");
             return;
+        }*/
+
+        // ******************* CONTROLE POR TIMER **********************
+        // Não precisa usar o critical section pra ler variável compartilhada
+
+        if(interrompeu)
+        {
+            dacWrite(pino_dac, DAC_out);
+            portENTER_CRITICAL(&timerMux);
+            interrompeu = false;
+            portEXIT_CRITICAL(&timerMux);
+            
+            countTotal += (uint32_t)nTicks;
+            if(indexWave == SQUARE_WAVE_RES)
+                indexWave = 0;
+            
+            else
+                indexWave++;
         }
+
+
+        if(ondaQ[indexWave] == 1)
+        {
+            //portENTER_CRITICAL(&timerMux);
+            DAC_out =  valorUp; // Controla a saída do DAC de acordo com a onda guardada em ondaQ
+            //portEXIT_CRITICAL(&timerMux);
+        }    
+        else
+        {
+            //portENTER_CRITICAL(&timerMux);
+            DAC_out =  valorDown; // Controla a saída do DAC de acordo com a onda guardada em ondaQ
+            //portEXIT_CRITICAL(&timerMux); 
+        }
+
+        if(*estadoAtual != EE_SQUARE)
+        {
+            timerAlarmDisable(timer_INT);
+            dacWrite(pino_dac, 128);
+            Serial.write("STOPPED\n");
+            return;
+        }
+
+        if(countTotal >= tempoTotal)
+        {
+            timerAlarmDisable(timer_INT);
+            *estadoAtual = STAND_BY;
+            Serial.write("STOPPED\n");
+            return;
+        }
+        checkSerial_Fast(estadoAtual);  // Verifica se o comando STO não chegou
+
+/*
+        if((millis() - tempo_teste) > 1000)
+        {
+            tempo_teste = millis();
+            Serial.print("countTotal = ");
+            Serial.write(countTotal);
+            Serial.println();
+        }
+*/
     }
-    //ledcWrite(CANAL_PWM, dutyCycle);
 }
 
 // Função chamada quando chega a mensagem 'WFM-SQR'
@@ -317,13 +435,11 @@ void Eletroestimulador::setupOndaQuad()
 {
     uint16_t samples;
 
-    /*
-    ************************* TEM COISA ERRADA NO CALCULO DE LARGURA DE BANDA ************************
-    */
+
     
     step = float(period) / float(SQUARE_WAVE_RES);  // Tempo entre uma amostra e outra
     if (step <= 0)
-        step = 1;
+        step = 0.1;
     samples = uint16_t(bandwidth / step);     // Quantidade de amostras no tempo de bandwidth
 
     // Proteção caso o número de amostras ultrapasse a quantidade máxima
@@ -355,7 +471,13 @@ void Eletroestimulador::setupOndaQuad()
     }
     Serial.println();
 
+    //********** LIGANDO O TIMER **********
+    portENTER_CRITICAL(&timerMux);
+    nTicks = (uint64_t)(step * 10);
+    portEXIT_CRITICAL(&timerMux);
 
+    Serial.write("nTicks = ");
+    Serial.println((uint32_t)nTicks);
 
     //ledcSetup(CANAL_PWM, freq, resolution);
 
@@ -365,4 +487,112 @@ void Eletroestimulador::setupOndaQuad()
 void Eletroestimulador::geraFormaDeOnda()
 {
     // ver qual a onda ativa
+}
+
+void Eletroestimulador::IRQtimer()
+{
+    /*
+    dacWrite(pino_dac, DAC_out);
+    portENTER_CRITICAL_ISR(&timerMux);
+    countTotal += nTicks;
+    portEXIT_CRITICAL_ISR(&timerMux);
+    if(indexWave == SQUARE_WAVE_RES)
+    {
+        portENTER_CRITICAL_ISR(&timerMux);
+        indexWave = 0;
+        portEXIT_CRITICAL_ISR(&timerMux);
+    }
+    else
+    {
+        portENTER_CRITICAL_ISR(&timerMux);
+        indexWave++;
+        portEXIT_CRITICAL_ISR(&timerMux);
+    } */
+    portENTER_CRITICAL_ISR(&timerMux);
+    interrompeu = true;
+    portEXIT_CRITICAL_ISR(&timerMux);
+
+    // botar o timer mux em cima pra ver se faz diferença
+
+}
+
+void Eletroestimulador::configTimer(hw_timer_t * _timer)
+{
+    //timerAttachInterrupt(_timer, fn, true);
+    timer_INT = _timer;
+}
+
+void Eletroestimulador::geraSpike(estados *estadoAtual)
+{
+    while(Serial.available() > 2)
+    {
+        uint8_t buf_length = 0;
+        
+        //Serial.write("Checou\n");
+
+        // Lê até a quebra de linha ('\n')
+        buf_length = (uint8_t)Serial.readBytesUntil('\n', buf_spk, 3);
+        
+
+        // Sai do loop caso a leitura tenha tamanho 0 (para evitar quaisquer erros de leitura)
+        if(buf_length == 0) // Sai do loop caso seja maior que 3 (o terminador é descartado)
+            break;
+
+            // Colocar pra mandar tamanho do buffer
+
+        // Se a mensagem for 'STO', ele volta pro STAND_BY
+        if(buf_spk[0] == '0')
+            dacWrite(pino_dac, spk_off);
+        else if(buf_spk[0] == '1')
+            dacWrite(pino_dac, spk_on);
+        else
+        {
+            dacWrite(pino_dac, 128);
+            *estadoAtual = STAND_BY;
+            Serial.write("STOPPED\n");
+            Serial.write("Buffer length: ");
+            Serial.println(buf_length);
+            for(int i = 0; i < buf_length; i++)
+            {
+                Serial.write(buf_spk[i]);
+                Serial.println();   
+            }
+                
+        }
+            
+
+        break;
+    }
+}
+void Eletroestimulador::setupSpike()
+{
+    switch (direcao_corrente)
+    {
+        // Catodica: 0 a 1.65 V
+        case CATODICA:
+            //sum = 0;
+            //multiplier = 1;
+            spk_on = 127 - valor_DAC;
+            spk_off = 127;
+            break;
+
+        // Anodica 1.65 a 3.3 V
+        case ANODICA:
+            //sum = 128;
+            //multiplier = 1;
+            spk_on = 128 + valor_DAC;
+            spk_off = 127;
+            break;
+
+        // Bidirecional 0 a 3.3 V
+        
+        case BIDIRECIONAL:
+        /*
+            sum = 0;
+            multiplier = 2;
+            valorUp = 128 + valor_DAC;
+            valorDown = 127 - valor_DAC;*/
+            break;
+            
+    }
 }

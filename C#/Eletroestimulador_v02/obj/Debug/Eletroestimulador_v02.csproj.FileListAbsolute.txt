@@ -9,3 +9,4 @@ C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulado
 C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador_v02\obj\Debug\Eletroestimulador_v02.exe
 C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador_v02\obj\Debug\Eletroestimulador_v02.pdb
 C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador_v02\obj\Debug\Eletroestimulador_v02.TelaMain.resources
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador_v02\obj\Debug\Eletroestimulador_v02.TelaSpikes.resources
