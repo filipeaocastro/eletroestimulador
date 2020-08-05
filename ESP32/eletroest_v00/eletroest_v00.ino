@@ -36,6 +36,12 @@ static byte formasDeOnda[TiposDeOnda][QteAmostras] = {0};
 
 bool mudouDAC = false;
 
+//portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+
+//volatile bool _interrompeu = false;
+
+//void IRAM_ATTR timerISR();
+
 
 
 /**
@@ -53,9 +59,10 @@ void setup()
   Serial.begin(115200);
   pinMode(27, INPUT_PULLUP); // Botão
 
-  timer = timerBegin(0, 8, true);  // inicia com o passo de 0.1 us
+  timer = timerBegin(1, 8, true);  // inicia com o passo de 0.1 us
   timerAttachInterrupt(timer, &timerISR, true);
   eest.configTimer(timer);
+  //eest.interromp(&_interrompeu, &timerMux);
 
 }
 
@@ -150,4 +157,8 @@ void ondaQuad(int direcao, int amp, float pulseWidth)
 void timerISR()
 {
     eest.IRQtimer();
+
+    //portENTER_CRITICAL_ISR(&timerMux);
+   // _interrompeu = true;
+    //portEXIT_CRITICAL_ISR(&timerMux);
 }

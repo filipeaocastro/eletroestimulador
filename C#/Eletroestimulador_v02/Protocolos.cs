@@ -38,6 +38,9 @@ namespace Eletroestimulador_v02
         public const string iDirection_cathodic = "IDR-CAT";
         public const string iDirection_biDirectional = "IDR-BID";
 
+        public const string init_spk_transfer = "BGN-";
+        public const string end_spk_transfer = "END";
+
 
         public List<string> Cods()
         {

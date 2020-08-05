@@ -11,7 +11,7 @@ void Eletroestimulador::checkSerial(estados *estadoAtual)
     {
         uint8_t buf_length = 0;
         char codigo[4];
-        char valor_buf[32] = {'f'};
+        char valor_buf[BUF_LENGTH] = {'f'};
         uint32_t valor = 0;
         uint8_t buf[BUF_LENGTH] = {'f'};
 
@@ -46,7 +46,7 @@ void Eletroestimulador::checkSerial(estados *estadoAtual)
                 
                 case SPIKE:
                     *estadoAtual = EE_SPK;
-                    Serial.write("INITIATED\n");
+                    timer_on = false;
                     break;
 
                 default:
@@ -207,6 +207,55 @@ void Eletroestimulador::checkSerial(estados *estadoAtual)
             {
                 direcao_corrente = BIDIRECIONAL;
             }
+       }
+
+       else if (cod.equals(String("BGN")))
+       {
+           Serial.write("Recebeu BGN");
+           Serial.println(valor);
+           uint16_t index_sum = 0;
+           total_spikes = valor;
+           while(true)
+           {
+               if(Serial.available() > 1)
+               {
+                    buf_length = (uint8_t)Serial.readBytesUntil('\n', buf, BUF_LENGTH);
+
+                    Serial.write("buf_length = ");
+                    Serial.println(buf_length);
+                    //Serial.println(buf);
+
+
+                    if((buf[0] == 'E') && (buf[1] == 'N') && (buf[2] == 'D'))
+                        break;
+
+                    for(int i = 0; i < buf_length; i++)
+                    {
+                        spike_data[index_sum + i] = (buf[i] == '1');
+                    }
+                    index_sum += buf_length;
+               }
+               
+           }
+           /*
+           Serial.write("Saiu do while");
+           Serial.println();
+           uint8_t sum = 0;
+           for(uint16_t i = 0; i < total_spikes; i++)
+           {
+                if(spike_data[i])
+                    Serial.write("1");
+                else
+                    Serial.write("0");
+                
+                sum ++;
+                if(sum >= 100)
+                {
+                    Serial.println();
+                    sum = 0;
+                }
+           }*/
+            
        }
     }
 }
@@ -524,6 +573,19 @@ void Eletroestimulador::configTimer(hw_timer_t * _timer)
 
 void Eletroestimulador::geraSpike(estados *estadoAtual)
 {
+    bool nextSpike = false;
+    uint16_t spkIndex = 0;
+
+    uint8_t spk_true = 0;
+
+    if(timer_on == false)
+    {
+        timer_on = true;
+        Serial.write("INITIATED\n");
+        timerAlarmWrite(timer_INT, nTicks, true);
+        timerAlarmEnable(timer_INT);
+    }
+    /*
     while(Serial.available() > 2)
     {
         uint8_t buf_length = 0;
@@ -562,6 +624,51 @@ void Eletroestimulador::geraSpike(estados *estadoAtual)
             
 
         break;
+    }*/
+
+    while(true)
+    {
+        if(interrompeu)
+        {
+            portENTER_CRITICAL(&timerMux);
+            interrompeu = false;
+            portEXIT_CRITICAL(&timerMux);
+            spkIndex ++;
+            nextSpike = true;
+            if(spk_true > 0)
+                spk_true --;
+        }
+
+        if(spkIndex > total_spikes)
+            spkIndex = 0;
+
+    
+        if(nextSpike)
+        {
+            nextSpike = false;
+
+            if(spike_data[spkIndex])
+            {
+                //Serial.write("SPK\n");
+                dacWrite(pino_dac, spk_on);
+                spk_true = 3;   // Mantém o spike ligado por 3 ms
+            }
+            else if(!spike_data[spkIndex] && (spk_true == 0) )
+            {
+                dacWrite(pino_dac, spk_off);
+            }
+        }
+        
+
+        checkSerial_Fast(estadoAtual);  // Verifica se o comando STO não chegou
+        if(*estadoAtual != EE_SPK)
+        {
+            timerAlarmDisable(timer_INT);
+            dacWrite(pino_dac, 128);
+            Serial.write("STOPPED\n");
+            timer_on = false;
+            return;
+        }
     }
 }
 void Eletroestimulador::setupSpike()
@@ -595,4 +702,16 @@ void Eletroestimulador::setupSpike()
             break;
             
     }
+
+    nTicks = (uint64_t)(10000);    // Cada tick = 0.1 us
+    // 10000 * 0.1 us = 1 ms
+
+    Serial.write("nTicks = ");
+    Serial.println((uint32_t)nTicks);
+}
+
+void Eletroestimulador::interromp(volatile bool * _int, portMUX_TYPE * _timerMux)
+{
+    //interrompeu = _int;
+    //timerMux = _timerMux;
 }

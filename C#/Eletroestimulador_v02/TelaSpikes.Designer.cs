@@ -48,6 +48,7 @@
             this.checkBox_applyParameters = new System.Windows.Forms.CheckBox();
             this.panel_toggle = new System.Windows.Forms.Panel();
             this.button_loadTex = new System.Windows.Forms.Button();
+            this.textBox_fileName = new System.Windows.Forms.TextBox();
             this.groupBox_currentDirection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_textureNumber)).BeginInit();
             this.panel_toggle.SuspendLayout();
@@ -56,7 +57,7 @@
             // button_update
             // 
             this.button_update.Enabled = false;
-            this.button_update.Location = new System.Drawing.Point(64, 333);
+            this.button_update.Location = new System.Drawing.Point(66, 385);
             this.button_update.Name = "button_update";
             this.button_update.Size = new System.Drawing.Size(145, 42);
             this.button_update.TabIndex = 6;
@@ -118,7 +119,7 @@
             // button_connectUc
             // 
             this.button_connectUc.Enabled = false;
-            this.button_connectUc.Location = new System.Drawing.Point(81, 292);
+            this.button_connectUc.Location = new System.Drawing.Point(83, 344);
             this.button_connectUc.Name = "button_connectUc";
             this.button_connectUc.Size = new System.Drawing.Size(107, 35);
             this.button_connectUc.TabIndex = 21;
@@ -267,11 +268,21 @@
             this.button_loadTex.UseVisualStyleBackColor = true;
             this.button_loadTex.Click += new System.EventHandler(this.button_loadTex_Click);
             // 
+            // textBox_fileName
+            // 
+            this.textBox_fileName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox_fileName.Location = new System.Drawing.Point(95, 306);
+            this.textBox_fileName.Name = "textBox_fileName";
+            this.textBox_fileName.Size = new System.Drawing.Size(94, 21);
+            this.textBox_fileName.TabIndex = 37;
+            this.textBox_fileName.Text = "File";
+            // 
             // TelaSpikes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 388);
+            this.ClientSize = new System.Drawing.Size(282, 432);
+            this.Controls.Add(this.textBox_fileName);
             this.Controls.Add(this.button_loadTex);
             this.Controls.Add(this.button_toggleVisible);
             this.Controls.Add(this.button_connectUc);
@@ -280,12 +291,15 @@
             this.Name = "TelaSpikes";
             this.Text = "TelaSpikes1";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TelaSpikes_FormClosed);
+            this.Click += new System.EventHandler(this.TelaSpikes_Click);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TelaSpikes_KeyDown);
             this.groupBox_currentDirection.ResumeLayout(false);
             this.groupBox_currentDirection.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_textureNumber)).EndInit();
             this.panel_toggle.ResumeLayout(false);
             this.panel_toggle.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -309,5 +323,6 @@
         private System.Windows.Forms.CheckBox checkBox_applyParameters;
         private System.Windows.Forms.Panel panel_toggle;
         private System.Windows.Forms.Button button_loadTex;
+        private System.Windows.Forms.TextBox textBox_fileName;
     }
 }

@@ -10,6 +10,7 @@
 #define PWM_RESOLUTION 12   // Resolução (1 a 16 bits) (Quanto maior a resolução, menor a freq máxima)
 
 #define SQUARE_WAVE_RES 50
+#define SPIKE_DATA_LENGTH 8000
 
 // Estados do sistema
 typedef enum{
@@ -51,21 +52,29 @@ class Eletroestimulador
     uint8_t buf_spk[3] = {'f'};
     uint8_t spk_on = 127;
     uint8_t spk_off = 127;
+    volatile bool spike_data[SPIKE_DATA_LENGTH] = {0};
+    uint16_t total_spikes = 0;
 
     
     //Variáveis do timer
     
     volatile uint64_t nTicks = 0;
-    hw_timer_t * timer_INT = NULL;
+    
     uint8_t pino_dac = 0;
     volatile uint32_t countTotal = 0;  // Controla o tempo total de estimulação
     volatile uint8_t indexWave = 0;   // Controla o index do vetor que guarda a onda 
     volatile uint8_t DAC_out = 0;     // Valor de saída do DAC usado pela timerISR
-    portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+
     volatile bool interrompeu = false;
+    portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+    hw_timer_t * timer_INT = NULL;
+
+    volatile bool timer_on = false;
+    
 
     void setupOndaQuad();
     void setupSpike();
+    
 
   public:
     Eletroestimulador(uint8_t _pino_dac);
@@ -78,6 +87,10 @@ class Eletroestimulador
 
     void configTimer(hw_timer_t * _timer);
     void IRQtimer();
+
+    void interromp(volatile bool * _int, portMUX_TYPE * _timerMux);
+
+    
     
 };
 
