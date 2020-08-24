@@ -59,7 +59,7 @@ void setup()
   Serial.begin(115200);
   pinMode(27, INPUT_PULLUP); // Botão
 
-  timer = timerBegin(1, 8, true);  // inicia com o passo de 0.1 us
+  timer = timerBegin(0, 8, true);  // inicia com o passo de 0.1 us
   timerAttachInterrupt(timer, &timerISR, true);
   eest.configTimer(timer);
   //eest.interromp(&_interrompeu, &timerMux);

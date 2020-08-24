@@ -16,7 +16,7 @@ using System.Diagnostics;
 
 namespace Eletroestimulador_v02
 {
-    public partial class TelaSpikes : Form
+    public partial class SpikesForm : Form
     {
         // Dados da comunicação serial
         private string busDescriptionESP = "CP2102 USB to UART Bridge Controller";
@@ -27,6 +27,12 @@ namespace Eletroestimulador_v02
         Stopwatch intervalo_echo;
         private long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
         private long tempoDecorrido = 0;
+
+        private int amplitude = 3000;
+        private int iDirection = 1; // 0 = Anodic, 1 = Cathodic
+        private int textureNumber = 0; // 0 = random
+
+        List<string[,]> textureList = new List<string[,]>();
 
 
 
@@ -39,6 +45,13 @@ namespace Eletroestimulador_v02
         private int samples = 0;
 
         private string txtPath;
+
+        StreamReader confFileOutputR;
+        StreamWriter confFileOutputW;
+        private bool confFileExist;
+        private string confFileName = "conf.txt";
+        private string confDocPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        private string confFilePath;
 
         private int totalTextures = 0;
         private int aleatTexture = 1;
@@ -55,13 +68,11 @@ namespace Eletroestimulador_v02
         }
         estados_estimulacao estadoAtual = estados_estimulacao.DESATUALIZADO;
 
-        public TelaSpikes()
+        public SpikesForm()
         {
             InitializeComponent();
-            textBox_duration.Text = "";
-            textBox_amplitude.Text = "";
             setTimer();
-
+            setConfFile();
             
 
         }
@@ -272,6 +283,8 @@ namespace Eletroestimulador_v02
                     case estados_estimulacao.ATUALIZADO:
                         // Enviar comando p/ INICIAR e só mudar o estado quando o ESP avisar que iniciou
                         ESPSerial.WriteLine(Protocolos.iniciar);
+                        label_fileName.Enabled = false;
+                        textBox_fileName.Enabled = false;
                         break;
 
                     case estados_estimulacao.DESATUALIZADO:
@@ -281,11 +294,14 @@ namespace Eletroestimulador_v02
                         //duration = Convert.ToInt32(textBox_duration.Text);
                         //if (duration == 0)
                         //    duration = spikesTxt.Length;
-                        if(checkBox_applyParameters.Checked == false)
-                        {
-                            ESPSerial.WriteLine(Protocolos.amplitude + "2000");
-                            ESPSerial.WriteLine(Protocolos.iDirection_anodic);
-                        }
+
+                        //if(checkBox_applyParameters.Checked == false)
+                        //{
+
+                        //}
+                        readConf();
+                        updateTexture();
+                        sendData();
                         spikeTransfer();
                         ESPSerial.WriteLine(Protocolos.wf_spike);
                         break;
@@ -306,6 +322,8 @@ namespace Eletroestimulador_v02
             {
                 case "Update":
                     estadoAtual = estados_estimulacao.DESATUALIZADO;
+                    label_fileName.Enabled = true;
+                    textBox_fileName.Enabled = true;
                     //enableTBs(true);
                     break;
 
@@ -321,28 +339,14 @@ namespace Eletroestimulador_v02
                    // ESPSerial.WriteLine(Protocolos.);
                     //initTimer(false);   // Para o timer, só inicia quando o ESP avisa que pode
                     estadoAtual = estados_estimulacao.ATUALIZADO;
+                    label_fileName.Enabled = true;
+                    textBox_fileName.Enabled = true;
                     //enableTBs(true);
                     break;
             }
         }
 
         #endregion
-
-        private string coletaDados()
-        {
-            //bool rnd_on = checkBox_intervaloTBaleat.Checked;
-            string dados = "";
-
-            //dados += Protocolos.larguraPulso + (trackBar_spikeWidth.Value * 100).ToString() + "\n";   // Largura do spike
-            dados += Protocolos.amplitude + textBox_amplitude.Text + "\n"; // Amplitude do spike
-            dados += verificaDirecao(); // Verifica os radiobuttons de direção da corrente
-            dados += Protocolos.wf_spike + "\n";    // Indica que a forma de onda é por spikes
-
-            // Escreve os dados a serem enviado no console, para fins de depuração
-            Console.Write(dados);
-
-            return dados;
-        }
 
         private void trackBar_spikeWidth_Scroll(object sender, EventArgs e)
         {
@@ -397,20 +401,6 @@ namespace Eletroestimulador_v02
             
         }
 
-        /*
-         * Confere os radiobuttons relacionados à direção da corrente e retorna o código de protocolo 
-         * relacionado à mesma
-         */
-        private string verificaDirecao()
-        {
-            if (radioButton_anodic.Checked == true)
-                return Protocolos.iDirection_anodic + "\n";
-            else if (radioButton_cathodic.Checked == true)
-                return Protocolos.iDirection_cathodic + "\n";
-            else
-                return Protocolos.iDirection_biDirectional + "\n";
-        }
-
         #region Interface functions
 
         private void mudaLabelAtualizar()
@@ -446,12 +436,8 @@ namespace Eletroestimulador_v02
 
         private void button_toggleVisible_Click(object sender, EventArgs e)
         {
-            componentsVisible();
-        }
-
-        private void componentsVisible()
-        {
-            panel_toggle.Visible = !panel_toggle.Visible;
+            spkParameters spikeParameters = new spkParameters(amplitude, iDirection, totalTextures);
+            spikeParameters.Show();
         }
 
         private void numericUpDown_textureNumber_ValueChanged(object sender, EventArgs e)
@@ -484,10 +470,13 @@ namespace Eletroestimulador_v02
                     foreach (string str in files)
                     {
                         Console.WriteLine(str);
+                        isTexture(str);
                     }
 
+                    /*
                     totalTextures = files.Length;
-                    numericUpDown_textureNumber.Maximum = totalTextures;
+
+
                     rand = new Random();
                     aleatTexture = rand.Next(1, totalTextures + 1);
                     //MessageBox.Show(aleatTexture.ToString());
@@ -500,16 +489,28 @@ namespace Eletroestimulador_v02
 
                     reading = sr.ReadToEnd();
                     reading = reading.Trim();
+
                     for (int i = 0; i < reading.Length; i++)
                     {
                         if (reading[i] != ',')
                             spikesTxt += reading[i];
                     }
 
-                    spikes = new bool[spikesTxt.Length];
+                    spikes = new bool[spikesTxt.Length];*/
+
+                    // TEST
+                    //readConf();
+                    //updateTexture();
+
+                    // END TEST
+
+
+
+                    /* ATÉ AQUI */
 
                     button_toggleVisible.Enabled = true;
                     button_connectUc.Enabled = true;
+                    button_loadTex.Enabled = false;
                 }
                 catch (SecurityException ex)
                 {
@@ -546,62 +547,205 @@ namespace Eletroestimulador_v02
 
         private void TelaSpikes_KeyDown(object sender, KeyEventArgs e)
         {
-            Console.WriteLine("Bateu a tecla");
-            if( (e.KeyCode == Keys.Up) && (estadoAtual == estados_estimulacao.ATIVO))
-            {
-                // Enviar comando p/ PARAR e o estado só muda quando o ESP avisar que parou
-                ESPSerial.WriteLine(Protocolos.parar);
-                if (intervalo_echo.IsRunning)
-                    intervalo_echo.Stop();
-                tempoDecorrido = intervalo_echo.ElapsedTicks * nanosecPerTick;
-                tempoDecorrido /= 100000;
 
-                string[] lines = {"Caminho do arquivo: " + txtPath, "Tempo decorrido: "
-                        + tempoDecorrido.ToString() + " ms"};
-
-                string docPath =
-          Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "saves",  "WriteLines.txt")))
-                {
-                    foreach (string line in lines)
-                        outputFile.WriteLine(line);
-                }
-
-                //initTimer(false);   // Para o timer, só inicia quando o ESP avisa que pode
-
-            }
         }
 
         private void TelaSpikes_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void TelaSpikes_KeyPress(object sender, KeyPressEventArgs e)
+        {
             Console.WriteLine("Bateu a tecla");
+            Console.WriteLine(e.KeyChar.ToString());
+            
+        }
+
+        private void saveOutput()
+        {
             if (estadoAtual == estados_estimulacao.ATIVO)
             {
                 // Enviar comando p/ PARAR e o estado só muda quando o ESP avisar que parou
                 ESPSerial.WriteLine(Protocolos.parar);
                 if (intervalo_echo.IsRunning)
                     intervalo_echo.Stop();
-                tempoDecorrido = intervalo_echo.ElapsedTicks * nanosecPerTick;
-                tempoDecorrido /= 1000000;
 
-                string[] lines = {"Caminho do arquivo: " + txtPath, "Tempo decorrido: "
+                try
+                {
+                    tempoDecorrido = intervalo_echo.ElapsedTicks * nanosecPerTick;
+                    tempoDecorrido /= 1000000;
+
+                    string[] lines = {"Spike file path: " + txtPath, "Duration: "
                         + tempoDecorrido.ToString() + " ms"};
 
-                string docPath =
-          Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    string docPath =
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                    docPath = Path.Combine(docPath, "saves txt", textBox_fileName.Text + ".txt");
 
 
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "saves txt", textBox_fileName.Text + ".txt")))
-                {
-                    foreach (string line in lines)
-                        outputFile.WriteLine(line);
+                    using (StreamWriter outputFile = new StreamWriter(docPath))
+                    {
+                        foreach (string line in lines)
+                            outputFile.WriteLine(line);
+                    }
+                    
+
+                    MessageBox.Show("This acquisition data was saved on: " + docPath, "Data saved!", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString(), "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                
                 //initTimer(false);   // Para o timer, só inicia quando o ESP avisa que pode
 
             }
+        }
+
+        private void button_update_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            Console.WriteLine("Bateu a tecla");
+            if (e.KeyCode == Keys.Up)
+                saveOutput();
+        }
+
+        private void setConfFile()
+        {
+
+            try
+            {
+                confFilePath = Path.Combine(confDocPath, confFileName);
+
+                if (File.Exists(confFilePath) == false)
+                {
+                    confFileOutputW = new StreamWriter(confFilePath);
+                    confFileOutputW.WriteLine("Amplitude\t3000" + Environment.NewLine);
+                    confFileOutputW.WriteLine("Current_Direction\tCAT" + Environment.NewLine);
+                    confFileOutputW.Close();
+
+                }
+                readConf();
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }
+        private void readConf()
+        {
+            List<string> vs = new List<string>();
+            confFileOutputR = new StreamReader(confFilePath);
+            while(!confFileOutputR.EndOfStream)
+            {
+                vs.Add(confFileOutputR.ReadLine());
+            }
+            confFileOutputR.Close();
+            
+            foreach(string str in vs)
+            {
+                string[] vs1 = str.Split('\t');
+                if (vs1[0] == "Amplitude")
+                    amplitude = Convert.ToInt32(vs1[1]);
+                if (vs1[0] == "Current_Direction")
+                {
+                    if (vs1[1] == "CAT")
+                        iDirection = 1;
+                    else
+                        iDirection = 0;
+                }
+                if(vs1[0] == "Texture")
+                {
+                    textureNumber = Convert.ToInt32(vs1[1]);
+                    Console.WriteLine("Tex number: " + textureNumber.ToString());
+                }
+            }
+        }
+
+        private void updateTexture()
+        {
+            string texData = "";
+            int aleatTex = textureNumber;
+
+            if(textureNumber == 0)
+            {
+                rand = new Random();
+                aleatTex = rand.Next(1, totalTextures + 1);
+            }
+            foreach (string[,] str in textureList)
+            {
+                Console.WriteLine("Texture: [ " + str[0, 1] + " ]");
+            }
+
+
+            foreach (string [,] str in textureList)
+            {
+                if (str[0, 1] == aleatTex.ToString())
+                {
+                    texData = str[0, 0];
+                    break;
+                }
+            }
+
+            spikesTxt = "";
+            for (int i = 0; i < texData.Length; i++)
+            {
+                if (texData[i] != ',')
+                    spikesTxt += texData[i];
+            }
+
+            //spikes = new bool[spikesTxt.Length];
+        }
+
+        private void sendData()
+        {
+            ESPSerial.WriteLine(Protocolos.amplitude + amplitude.ToString());
+            if(iDirection == 0)
+                ESPSerial.WriteLine(Protocolos.iDirection_anodic);
+            else if(iDirection == 1)
+                ESPSerial.WriteLine(Protocolos.iDirection_cathodic);
+        }
+
+        private void isTexture(string path)
+        {
+            //List<string[][]> vs =  
+            bool isTexture = false;
+            string number;
+            try
+            {
+                if (path.EndsWith(".txt"))
+                {
+                    number = path[path.Length - 5].ToString();
+
+                    for (int i = 1; i < 9; i++)
+                    {
+                        if (i == Convert.ToInt32(number))
+                        {
+                            string textureData;
+                            string[,] listObj;
+                            isTexture = true;
+                            totalTextures++;
+                            var sr = new StreamReader(path);
+
+                            textureData = sr.ReadToEnd();
+                            textureData = textureData.Trim();
+                            listObj = new string[1, 2] { { textureData, number.ToString()} };
+                            textureList.Add(listObj);
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            
         }
     }
 }
@@ -609,6 +753,6 @@ namespace Eletroestimulador_v02
 
 /* TO DO:
  * 
- *  Criar protocolos para enviar a quantidade total de spikes e carregar eles no ESP.
- * 
+ *  Fazer um form pra mudar os parâmetros dos spikes e salvar esses dados num txt em documentos
+ *  Colocar proteção nas textboxes pros valores não passarem do que devem
  */ 

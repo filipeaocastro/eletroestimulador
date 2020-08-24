@@ -19,7 +19,7 @@ namespace Eletroestimulador_v02
         }
 
         TelaMain telaMain;
-        TelaSpikes telaSpikes;
+        SpikesForm telaSpikes;
 
         private void button_novo_Click(object sender, EventArgs e)
         {
@@ -41,7 +41,7 @@ namespace Eletroestimulador_v02
         private void button1_Click(object sender, EventArgs e)
         {
             hideCtrls();
-            telaSpikes = new TelaSpikes();
+            telaSpikes = new SpikesForm();
             this.Hide();
             telaSpikes.Show();
         }

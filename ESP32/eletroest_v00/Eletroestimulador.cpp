@@ -575,7 +575,7 @@ void Eletroestimulador::geraSpike(estados *estadoAtual)
 {
     bool nextSpike = false;
     uint16_t spkIndex = 0;
-
+    bool spike_off = true;
     uint8_t spk_true = 0;
 
     if(timer_on == false)
@@ -652,10 +652,12 @@ void Eletroestimulador::geraSpike(estados *estadoAtual)
                 //Serial.write("SPK\n");
                 dacWrite(pino_dac, spk_on);
                 spk_true = 3;   // Mantém o spike ligado por 3 ms
+                spike_off = false;
             }
-            else if(!spike_data[spkIndex] && (spk_true == 0) )
+            else if(!spike_data[spkIndex] && (spk_true == 0) && (spike_off == false) )
             {
                 dacWrite(pino_dac, spk_off);
+                spike_off = true;
             }
         }
         
@@ -715,3 +717,7 @@ void Eletroestimulador::interromp(volatile bool * _int, portMUX_TYPE * _timerMux
     //interrompeu = _int;
     //timerMux = _timerMux;
 }
+
+/*
+    Estimulação nao para quando mandar parar
+*/

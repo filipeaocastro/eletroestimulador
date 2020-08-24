@@ -47,6 +47,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Protocolos.cs" />
+    <Compile Include="spikeParameters.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="spikeParameters.Designer.cs">
+      <DependentUpon>spikeParameters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="spkParameters.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="spkParameters.Designer.cs">
+      <DependentUpon>spkParameters.cs</DependentUpon>
+    </Compile>
     <Compile Include="TelaInicial.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -68,6 +80,12 @@
       <DependentUpon>TelaSpikes.cs</DependentUpon>
     </Compile>
     <Compile Include="Win32DeviceMgmt.cs" />
+    <EmbeddedResource Include="spikeParameters.resx">
+      <DependentUpon>spikeParameters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="spkParameters.resx">
+      <DependentUpon>spkParameters.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TelaInicial.resx">
       <DependentUpon>TelaInicial.cs</DependentUpon>
     </EmbeddedResource>

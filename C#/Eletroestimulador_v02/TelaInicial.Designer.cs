@@ -38,41 +38,41 @@
             // 
             this.label_eletroestimulador.AutoSize = true;
             this.label_eletroestimulador.Font = new System.Drawing.Font("Arial Narrow", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_eletroestimulador.Location = new System.Drawing.Point(103, 41);
+            this.label_eletroestimulador.Location = new System.Drawing.Point(103, 27);
             this.label_eletroestimulador.Name = "label_eletroestimulador";
-            this.label_eletroestimulador.Size = new System.Drawing.Size(268, 31);
+            this.label_eletroestimulador.Size = new System.Drawing.Size(266, 31);
             this.label_eletroestimulador.TabIndex = 4;
-            this.label_eletroestimulador.Text = "ELETROESTIMULADOR";
+            this.label_eletroestimulador.Text = "ELETROESTIMULATOR";
             // 
             // button_carregar
             // 
             this.button_carregar.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_carregar.Location = new System.Drawing.Point(274, 107);
+            this.button_carregar.Location = new System.Drawing.Point(279, 88);
             this.button_carregar.Name = "button_carregar";
             this.button_carregar.Size = new System.Drawing.Size(157, 61);
             this.button_carregar.TabIndex = 3;
-            this.button_carregar.Text = "CARREGAR\r\nPARÂMETROS";
+            this.button_carregar.Text = "LOAD\r\nPARAMETERS";
             this.button_carregar.UseVisualStyleBackColor = true;
             // 
             // button_novo
             // 
             this.button_novo.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_novo.Location = new System.Drawing.Point(49, 107);
+            this.button_novo.Location = new System.Drawing.Point(44, 88);
             this.button_novo.Name = "button_novo";
             this.button_novo.Size = new System.Drawing.Size(157, 61);
             this.button_novo.TabIndex = 5;
-            this.button_novo.Text = "NOVO\r\nPROJETO";
+            this.button_novo.Text = "NEW\r\nPROJECT";
             this.button_novo.UseVisualStyleBackColor = true;
             this.button_novo.Click += new System.EventHandler(this.button_novo_Click);
             // 
             // button_spikes
             // 
             this.button_spikes.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_spikes.Location = new System.Drawing.Point(134, 188);
+            this.button_spikes.Location = new System.Drawing.Point(129, 173);
             this.button_spikes.Name = "button_spikes";
-            this.button_spikes.Size = new System.Drawing.Size(221, 33);
+            this.button_spikes.Size = new System.Drawing.Size(221, 48);
             this.button_spikes.TabIndex = 6;
-            this.button_spikes.Text = "ESTIMULAÇÃO VIA SPIKES";
+            this.button_spikes.Text = "ELECTROSTIMULATION VIA SPIKES";
             this.button_spikes.UseVisualStyleBackColor = true;
             this.button_spikes.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -86,7 +86,7 @@
             this.Controls.Add(this.button_carregar);
             this.Controls.Add(this.label_eletroestimulador);
             this.Name = "TelaInicial";
-            this.Text = "Form1";
+            this.Text = "Electrostimulator";
             this.ResumeLayout(false);
             this.PerformLayout();
 

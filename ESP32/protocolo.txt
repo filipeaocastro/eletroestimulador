@@ -16,6 +16,8 @@ serial e irá definir os parâmetros da eletroestimulação, sendo estes:
     Amplitude de spike              (spk_amp)               SKA             uA
     Largura de spike                (spk_width)             SKW             us
 
+
+
     
     *************
     ARRUMAR POTENCIÔMETRO PRA VER A CORRENTE MÁXIMA E ARRUMAR A ESCALA DO DAC
@@ -35,6 +37,11 @@ serial e irá definir os parâmetros da eletroestimulação, sendo estes:
                             IDR-ANO - Anódica   ==> CATODO DO ELETRODO COMO POSITIVO (circulo de fora, onde tá o fio vermelho)
                             IDR-CAT - Catódica  ==> ANODO DO ELETRODO COMO POSITIVO
                             IDR-BID - Bi-direcional
+
+    BGN
+    
+    END
+
                             
     STA                     Start - Inicia a estimulação
     STO                     Stop - Interrompe a estimulação
