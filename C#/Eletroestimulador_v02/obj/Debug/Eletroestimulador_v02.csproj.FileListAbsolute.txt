@@ -12,3 +12,4 @@ C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulado
 C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador_v02\obj\Debug\Eletroestimulador_v02.SpikesForm.resources
 C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador_v02\obj\Debug\Eletroestimulador_v02.spikeParameters.resources
 C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador_v02\obj\Debug\Eletroestimulador_v02.spkParameters.resources
+C:\Users\Filipe Augusto\Google Drive\UFU\BioLab\TCC\Software\C#\Eletroestimulador_v02\obj\Debug\Eletroestimulador_v02.TestProtocol.resources

@@ -36,6 +36,7 @@
             this.button_loadTex = new System.Windows.Forms.Button();
             this.textBox_fileName = new System.Windows.Forms.TextBox();
             this.label_fileName = new System.Windows.Forms.Label();
+            this.button_initProtocol = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button_update
@@ -105,11 +106,22 @@
             this.label_fileName.TabIndex = 37;
             this.label_fileName.Text = "Output file name:";
             // 
+            // button_initProtocol
+            // 
+            this.button_initProtocol.Location = new System.Drawing.Point(67, 165);
+            this.button_initProtocol.Name = "button_initProtocol";
+            this.button_initProtocol.Size = new System.Drawing.Size(145, 42);
+            this.button_initProtocol.TabIndex = 39;
+            this.button_initProtocol.Text = "Initiate Test Protocol";
+            this.button_initProtocol.UseVisualStyleBackColor = true;
+            this.button_initProtocol.Click += new System.EventHandler(this.button_initProtocol_Click);
+            // 
             // SpikesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 164);
+            this.ClientSize = new System.Drawing.Size(282, 233);
+            this.Controls.Add(this.button_initProtocol);
             this.Controls.Add(this.label_fileName);
             this.Controls.Add(this.textBox_fileName);
             this.Controls.Add(this.button_loadTex);
@@ -132,5 +144,6 @@
         private System.Windows.Forms.Button button_loadTex;
         private System.Windows.Forms.TextBox textBox_fileName;
         private System.Windows.Forms.Label label_fileName;
+        private System.Windows.Forms.Button button_initProtocol;
     }
 }

@@ -30,7 +30,7 @@ namespace Eletroestimulador_v02
 
         private int amplitude = 3000;
         private int iDirection = 1; // 0 = Anodic, 1 = Cathodic
-        private int textureNumber = 0; // 0 = random
+        public int textureNumber = 0; // 0 = random
 
         List<string[,]> textureList = new List<string[,]>();
 
@@ -57,6 +57,10 @@ namespace Eletroestimulador_v02
         private int aleatTexture = 1;
         Random rand;
 
+        public event EventHandler StateChanged;
+
+        private TestProtocol testProtocol;
+
         // Variáveis para salvar no arquivo txt
         private int nTextura = 0;   // Numero da textura
 
@@ -74,7 +78,7 @@ namespace Eletroestimulador_v02
             setTimer();
             setConfFile();
             
-
+            
         }
 
         #region Funções de configuração da serial e thread de leitura
@@ -300,7 +304,7 @@ namespace Eletroestimulador_v02
 
                         //}
                         readConf();
-                        updateTexture();
+                        updateTexture(textureNumber);
                         sendData();
                         spikeTransfer();
                         ESPSerial.WriteLine(Protocolos.wf_spike);
@@ -352,6 +356,11 @@ namespace Eletroestimulador_v02
         {
             //label_spikeWidthValue.Text = (Convert.ToDouble(trackBar_spikeWidth.Value) / 10.0).ToString() + " ms";
             mudaLabelAtualizar();
+        }
+
+        private void HandleStateChanged(object sender, EventArgs e)
+        {
+
         }
 
         private void setParameterLabels(OpenFileDialog ofd)
@@ -666,10 +675,10 @@ namespace Eletroestimulador_v02
             }
         }
 
-        private void updateTexture()
+        public void updateTexture(int texNumber)
         {
             string texData = "";
-            int aleatTex = textureNumber;
+            int aleatTex = texNumber;
 
             if(textureNumber == 0)
             {
@@ -747,12 +756,20 @@ namespace Eletroestimulador_v02
 
             
         }
+
+        private void button_initProtocol_Click(object sender, EventArgs e)
+        {
+            //if(estadoAtual == estados_estimulacao.DESATUALIZADO)
+            //    button_initProtocol.PerformClick();
+            this.Hide();
+            testProtocol = new TestProtocol(this);
+            testProtocol.Show();
+        }
     }
 }
 
 
 /* TO DO:
  * 
- *  Fazer um form pra mudar os parâmetros dos spikes e salvar esses dados num txt em documentos
  *  Colocar proteção nas textboxes pros valores não passarem do que devem
  */ 
