@@ -20,9 +20,9 @@ namespace Eletroestimulador_v02
     {
         // Dados da comunicação serial
         private string busDescriptionESP = "CP2102 USB to UART Bridge Controller";
-        private SerialPort ESPSerial;
+        public SerialPort ESPSerial;
         private bool serialConectada = false;
-        Thread th;
+        public Thread th;
 
         Stopwatch intervalo_echo;
         private long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
@@ -60,6 +60,8 @@ namespace Eletroestimulador_v02
         public event EventHandler StateChanged;
 
         private TestProtocol testProtocol;
+        public bool testProtocolOn = false;
+        public int stateProtocol = 0;
 
         // Variáveis para salvar no arquivo txt
         private int nTextura = 0;   // Numero da textura
@@ -86,7 +88,7 @@ namespace Eletroestimulador_v02
         /**
          * Função de leitura da porta serial do ESP que roda como uma Thread em background
          */
-        private void rotinaLerSerial()
+        public void rotinaLerSerial()
         {
             // Loop que funciona enquanto a porta com o ESP estiver aberta
             while (ESPSerial.IsOpen)
@@ -103,24 +105,46 @@ namespace Eletroestimulador_v02
                     //  pra "Iniciar"
                     if (txt.ToString().Equals("STOPPED"))
                     {
-                        newLabel = "Start";
-                        changeState(newLabel);  // Função que muda o estado dos botões
+                        if(testProtocolOn)
+                        {
+                            stateProtocol = 0;
+                        }
+                        else
+                        {
+                            newLabel = "Start";
+                            changeState(newLabel);  // Função que muda o estado dos botões
+                        }
+                        
                     }
 
 
                     // Caso for INITIATED, a label muda pra "Parar"
                     else if (txt.ToString().Equals("INITIATED"))
                     {
-                        newLabel = "Stop";
-                        changeState(newLabel);  // Função que muda o estado dos botões
+                        if (testProtocolOn)
+                        {
+                            stateProtocol = 1;
+                        }
+                        else
+                        {
+                            newLabel = "Stop";
+                            changeState(newLabel);  // Função que muda o estado dos botões
+                        }
                     }
 
 
                     // Ele retorna OK! quando atualizamos os dados no ESP e o botão vira "Iniciar"
                     else if (txt.ToString().Equals("OK!"))
                     {
-                        newLabel = "Start";
-                        changeState(newLabel);  // Função que muda o estado dos botões
+                        if (testProtocolOn)
+                        {
+                            stateProtocol = 2;
+                        }
+                        else
+                        {
+                            newLabel = "Start";
+                            changeState(newLabel);  // Função que muda o estado dos botões
+                        }
                     }
                 }
             }
@@ -529,7 +553,7 @@ namespace Eletroestimulador_v02
             }
         }
 
-        private void spikeTransfer()
+        public void spikeTransfer()
         {
             int count = 0;
             ESPSerial.WriteLine(Protocolos.init_spk_transfer + spikesTxt.Length.ToString());
@@ -710,7 +734,7 @@ namespace Eletroestimulador_v02
             //spikes = new bool[spikesTxt.Length];
         }
 
-        private void sendData()
+        public void sendData()
         {
             ESPSerial.WriteLine(Protocolos.amplitude + amplitude.ToString());
             if(iDirection == 0)
