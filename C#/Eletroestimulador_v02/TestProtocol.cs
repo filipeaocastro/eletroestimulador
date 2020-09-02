@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
 
 
 namespace Eletroestimulador_v02
@@ -18,17 +19,25 @@ namespace Eletroestimulador_v02
     {
         SpikesForm telaSpikes;
         private int[] texSequence = new int[15];
+        private long[] elapedTime = new long[15];
+        private string[] arrowPressedArr = new string[15];
         private int textureSeqIndex = 0;    // Controls the 15 texture sequence
         private int sequenceIndex = 0;      // Controls the screen sequence during the protocol
         private int countdown = 0;
+        private string pressedKey;
         
 
         
-        Stopwatch interval;
+        Stopwatch interval = new Stopwatch();
         private long nanosecPerTick = (1000L * 1000L * 1000L) / Stopwatch.Frequency;
         private long tempoDecorrido = 0;
 
         Thread increment_progBar;
+
+        StreamWriter myStream;
+        SaveFileDialog saveFileDialog1;
+
+        #region enums
 
         private enum screen_states
         {
@@ -56,6 +65,9 @@ namespace Eletroestimulador_v02
         }
         serial_states serial_States = serial_states.IDLE;
 
+        #endregion
+
+        #region Constructors
         public TestProtocol()
         {
             InitializeComponent();
@@ -73,7 +85,10 @@ namespace Eletroestimulador_v02
             Console.WriteLine(telaSpikes.th.IsAlive.ToString());
             telaSpikes.testProtocolOn = true;
             initThreadProgBar();
+            increment_progBar.Start();
+            increment_progBar.Suspend();
         }
+        #endregion
 
         private void button_start_Click(object sender, EventArgs e)
         {
@@ -84,8 +99,8 @@ namespace Eletroestimulador_v02
                 screenState = screen_states.COUNTDOWN;
                 sequenceIndex = 1;
                 showCountDown(5);
+                button_status.Focus();
             }
-
         }
 
         private void generateSequence()
@@ -145,13 +160,15 @@ namespace Eletroestimulador_v02
 
         }
 
+        #region Countdown and timer functions
+
         private void showCountDown(int count)
         {
             countdown = count;
             screenState = screen_states.COUNTDOWN;
             label_countDown.Visible = true;
             label_countDown.Text = countdown.ToString();
-            timer1.Interval = 200; // voltar pra 1000
+            timer1.Interval = 1000; // voltar pra 1000
             timer1.Enabled = true;
             timer1.Start();
 
@@ -173,16 +190,16 @@ namespace Eletroestimulador_v02
                             screenState = screen_states.IMAGE;
                             showTextures();
                         }
-                        if (testStep == test_step.WAITING_FOR_START)
+                        else if (testStep == test_step.WAITING_FOR_START)
                         {
                             testStep = test_step.STIMULATION_ON;
                             Console.WriteLine("Before start");
                             startStimulation();
                             Console.WriteLine("Started");
                         }
-                        if (testStep == test_step.STIMULATION_ON)
+                        else if (testStep == test_step.STIMULATION_ON)
                         {
-
+                            startStimulation();
                         }
 
                         break;
@@ -195,7 +212,7 @@ namespace Eletroestimulador_v02
                     if (sequenceIndex == 3)
                     {
                         sequenceIndex = 0;
-                        timer1.Enabled = false;
+                        timer1.Stop();
                         testStep = test_step.WAITING_FOR_START;
                         pictureBox_textura.Image = null;
                         screenState = screen_states.COUNTDOWN;
@@ -216,17 +233,21 @@ namespace Eletroestimulador_v02
 
                 case screen_states.CROSS:
 
-                    endStimulation();
+                    endStimulation(false);
                     
                     break;
 
             }
         }
 
+        #endregion
+
+        #region Show textures images
+
         private void showTextures()
         {
             timer1.Enabled = false;
-            timer1.Interval = 1000; // voltar pra 7000
+            timer1.Interval = 7000; // voltar pra 7000
             showImage(sequenceIndex);
             timer1.Enabled = true;
             timer1.Start();
@@ -251,12 +272,18 @@ namespace Eletroestimulador_v02
             }
         }
 
+        #endregion
+
+        #region start/update/end/finish stimulation
+
         private void startStimulation()
         {
+            timer1.Stop();
             checkSerialState();
             if (serial_States != serial_states.UPDATED)
             {
-                MessageBox.Show("Something is wrong with the connection", "Erro", MessageBoxButtons.OK, 
+                MessageBox.Show("Something is wrong with the connection\nEstado: " + serial_States.ToString(), 
+                    "Erro", MessageBoxButtons.OK, 
                     MessageBoxIcon.Error);
 
                 // ************************** COLOCAR QUE FUNCÃO FINALIZA O PROTOCOLO E FECHA A TELA **********
@@ -265,21 +292,26 @@ namespace Eletroestimulador_v02
             }
 
             telaSpikes.ESPSerial.WriteLine(Protocolos.iniciar);
-            timer1.Stop();
+            
             timer1.Interval = 7300;
             do
             {
                 checkSerialState();
             } while (serial_States != serial_states.INITIATED);
-            screenState = screen_states.CROSS;
 
+            interval.Start();
+            
+            screenState = screen_states.CROSS;
             label_countDown.Visible = true;
             label_countDown.Text = "+";
 
             progressBar_cross.Visible = true;
             progressBar_cross.Value = 0;
-            increment_progBar.Start();
-            timer1.Start();
+            increment_progBar.Resume();  
+            timer1.Start(); // Inicia o timer de 7.3 s
+
+            label_counter.Text = (textureSeqIndex + 1).ToString();
+            button_status.BackColor = Color.Red;
 
         }
 
@@ -293,18 +325,38 @@ namespace Eletroestimulador_v02
             Console.WriteLine("Updated");
         }
 
-        private void endStimulation()
+        private void endStimulation(bool arrowPressed)
         {
+            elapedTime[textureSeqIndex] = interval.ElapsedMilliseconds; // Save the elapsed time on this texture
+            telaSpikes.ESPSerial.WriteLine(Protocolos.parar);   // Send the command to stop the stimulation
+            serial_States = serial_states.STOPPED;  // Chante de serial state to STOPPED
+
+            // Stop the timer and the Stopwatch
+            interval.Stop();
+            interval.Reset();
+            timer1.Stop();
+
+            button_status.BackColor = Color.Green;
+
             label_countDown.Text = "STOP";
-            telaSpikes.ESPSerial.WriteLine(Protocolos.parar);
-            if(textureSeqIndex >= (texSequence.Length - 1))
+            if (arrowPressed)
+                arrowPressedArr[textureSeqIndex] = pressedKey;
+            else
+                arrowPressedArr[textureSeqIndex] = "NULL";
+
+            increment_progBar.Suspend();
+            progressBar_cross.Visible = false;
+
+
+            if (textureSeqIndex >= (texSequence.Length - 1))
             {
-                // COLOCAR AQUI FUNÇÃO QUE SALVA OS DADOS DA ESTIMULAÇÃO NUMA MATRIZ
+                finishProtocol();
             }
             else
             {
                 textureSeqIndex++;
                 showCountDown(5);
+                updateTexture();
             }
             
 
@@ -312,8 +364,11 @@ namespace Eletroestimulador_v02
 
         private void finishProtocol()
         {
-            // ******************** COLOCAR AQUI FUNÇÃO QUE SALVA OS DADOS NO ARQUIVO ****************
+            saveOutput();
+            this.Close();
         }
+
+        #endregion
 
         private void checkSerialState()
         {
@@ -337,10 +392,7 @@ namespace Eletroestimulador_v02
             }
         }
 
-        private void TestProtocol_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Application.Exit();
-        }
+        
 
         #region Functions relating to the Progress Bar
 
@@ -392,31 +444,92 @@ namespace Eletroestimulador_v02
 
         #endregion
 
-        private void button_status_KeyDown(object sender, KeyEventArgs e)
+        private void button_status_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            switch (e.KeyCode)
+            Console.WriteLine("Tecla apertada");
+
+            if (serial_States == serial_states.INITIATED)
             {
-                case Keys.Left:
+                switch (e.KeyCode)
+                {
+                    case Keys.Left:
+                        pressedKey = "LEFT";
+                        break;
 
-                    break;
+                    case Keys.Up:
+                        pressedKey = "UP";
+                        break;
 
-                case Keys.Up:
+                    case Keys.Right:
+                        pressedKey = "RIGHT";
+                        break;
 
-                    break;
+                    default:
+                        return;
+                }
 
-                case Keys.Right:
-
-                    break;
-
-                default:
-
-                    break;
+                endStimulation(true);
             }
+        }
+
+        #region file output related functions
+
+        private void choosePath()
+        {
+            try
+            {
+                saveFileDialog1 = new SaveFileDialog();
+
+                saveFileDialog1.Filter = "txt files (*.txt)|*.txt";
+                saveFileDialog1.FilterIndex = 1;
+                saveFileDialog1.RestoreDirectory = true;
+
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                    myStream = new StreamWriter(saveFileDialog1.FileName);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void saveOutput()
+        {
+            string[] doc = new string[16];
+            doc[0] = "Trial\tTexture\tPressed Arrow\tElapsed Time (ms)";
+            
+            for(int i = 1; i < 16; i ++)
+            {
+                doc[i] = i.ToString() + "\t" + texSequence[i - 1].ToString() + "\t" 
+                    + arrowPressedArr[i - 1] + "\t\t" + elapedTime[i - 1].ToString();
+            }
+
+            try
+            {
+                choosePath();
+                if (myStream  != null)
+                {
+                    foreach(string s in doc)
+                    {
+                        myStream.WriteLine(s);
+                    }
+                        
+                    myStream.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        #endregion
+
+        private void TestProtocol_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
-
-/*  TO DO:
- * 
- *  Colocar uma trackbar ao invés de label pra fazer o countdown
- */ 

@@ -258,6 +258,7 @@ namespace Eletroestimulador_v02
 
                     button_update.Enabled = true;  // Ativa o botão iniciar
                     button_connectUc.Enabled = false;   // Desativa o botão de conectar
+                    button_initProtocol.Enabled = true; // Ativa botão do protocolo
                 }
             }
             catch (Exception ex)

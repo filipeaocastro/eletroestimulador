@@ -35,6 +35,7 @@
             this.pictureBox_textura = new System.Windows.Forms.PictureBox();
             this.button_status = new System.Windows.Forms.Button();
             this.progressBar_cross = new System.Windows.Forms.ProgressBar();
+            this.label_counter = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_textura)).BeginInit();
             this.SuspendLayout();
             // 
@@ -81,9 +82,9 @@
             this.button_status.Location = new System.Drawing.Point(463, 730);
             this.button_status.Name = "button_status";
             this.button_status.Size = new System.Drawing.Size(49, 47);
-            this.button_status.TabIndex = 3;
+            this.button_status.TabIndex = 1;
             this.button_status.UseVisualStyleBackColor = false;
-            this.button_status.KeyDown += new System.Windows.Forms.KeyEventHandler(this.button_status_KeyDown);
+            this.button_status.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.button_status_PreviewKeyDown);
             // 
             // progressBar_cross
             // 
@@ -96,11 +97,21 @@
             this.progressBar_cross.TabIndex = 5;
             this.progressBar_cross.Visible = false;
             // 
+            // label_counter
+            // 
+            this.label_counter.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_counter.ImageAlign = System.Drawing.ContentAlignment.TopRight;
+            this.label_counter.Location = new System.Drawing.Point(453, 27);
+            this.label_counter.Name = "label_counter";
+            this.label_counter.Size = new System.Drawing.Size(57, 47);
+            this.label_counter.TabIndex = 6;
+            // 
             // TestProtocol
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(522, 789);
+            this.Controls.Add(this.label_counter);
             this.Controls.Add(this.progressBar_cross);
             this.Controls.Add(this.button_status);
             this.Controls.Add(this.label_countDown);
@@ -123,5 +134,6 @@
         private System.Windows.Forms.PictureBox pictureBox_textura;
         private System.Windows.Forms.Button button_status;
         private System.Windows.Forms.ProgressBar progressBar_cross;
+        private System.Windows.Forms.Label label_counter;
     }
 }

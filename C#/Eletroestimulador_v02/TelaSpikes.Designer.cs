@@ -108,6 +108,7 @@
             // 
             // button_initProtocol
             // 
+            this.button_initProtocol.Enabled = false;
             this.button_initProtocol.Location = new System.Drawing.Point(67, 165);
             this.button_initProtocol.Name = "button_initProtocol";
             this.button_initProtocol.Size = new System.Drawing.Size(145, 42);
